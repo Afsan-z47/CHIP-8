@@ -26,3 +26,4 @@ void init_MEMORY(unsigned char *MEMORY,FILE *ROM);
 void init_INST_REG(unsigned short *Index_REG, unsigned char MEMORY_200, unsigned char MEMORY_201);
 void init_STACK(unsigned short *STACK);
 CHIP_8 init_EMU(FILE *ROM);
+void emulateCycle(CHIP_8 *chip);

@@ -81,7 +81,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 // [x] 1NNN     Jump to NNN 
 // [x] 2NNN     Call subroutine at NNN 
 // 3XKK     Skip next instruction if VX == KK 
-// 4XKK     Skip next instruction if VX <> KK 
+// 4XKK     Skip next instruction if VX <> KK  (Probably VX != KK)
 // 5XY0     Skip next instruction if VX == VY 
 // [x] 6XKK     VX := KK 
 // [x] 7XKK     VX := VX + KK 
@@ -104,12 +104,12 @@ CHIP_8 init_EMU(FILE *ROM) {
 // [x] EX9E     Skip next instruction if key VX pressed 
 // EXA1     Skip next instruction if key VX not pressed 
 // FX07     VX := delay_timer 
-// FX0A     wait for keypress, store hex value of key in VX 
-// FX15     delay_timer := VX 
-// FX18     sound_timer := VX 
+// [ ] FX0A     wait for keypress, store hex value of key in VX 
+// [ ] FX15     delay_timer := VX 
+// [ ] FX18     sound_timer := VX 
 // FX1E     I := I + VX 
 // FX29     Point I to 5-byte font sprite for hex character VX 
-// FX33     Store BCD representation of VX in M(I)..M(I+2) 
+// [-] FX33     Store BCD representation of VX in M(I)..M(I+2) 
 // FX55     Store V0..VX in memory starting at M(I) 
 // FX65     Read V0..VX from memory starting at M(I)
 
