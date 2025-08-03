@@ -2,6 +2,7 @@
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <string.h>
 #include "chip8.h"
 #include "display.h"
 
@@ -45,41 +46,79 @@ int main(int argc, char **argv){
 				return 0;
 			}
 			//User presses a key
-			else if (EVENT.type == SDL_KEYDOWN || EVENT.type == SDL_KEYUP) {
-				int is_pressed = (EVENT.type == SDL_KEYDOWN) ? 1 : 0;
-
-				switch (EVENT.key.keysym.sym) {
-					case SDLK_1: chip.KEY_PAD[1] = is_pressed; break;
-					case SDLK_2: chip.KEY_PAD[2] = is_pressed; break;
-					case SDLK_3: chip.KEY_PAD[3] = is_pressed; break;
-					case SDLK_4: chip.KEY_PAD[12] = is_pressed; break;
-					case SDLK_q: chip.KEY_PAD[4] = is_pressed; break;
-					case SDLK_w: chip.KEY_PAD[5] = is_pressed; break;
-					case SDLK_e: chip.KEY_PAD[6] = is_pressed; break;
-					case SDLK_r: chip.KEY_PAD[13] = is_pressed; break;
-					case SDLK_a: chip.KEY_PAD[7] = is_pressed; break;
-					case SDLK_s: chip.KEY_PAD[8] = is_pressed; break;
-					case SDLK_d: chip.KEY_PAD[9] = is_pressed; break;
-					case SDLK_f: chip.KEY_PAD[14] = is_pressed; break;
-					case SDLK_z: chip.KEY_PAD[10] = is_pressed; break;
-					case SDLK_x: chip.KEY_PAD[0] = is_pressed; break;
-					case SDLK_c: chip.KEY_PAD[11] = is_pressed; break;
-					case SDLK_v: chip.KEY_PAD[15] = is_pressed; break;
+			else if( EVENT.type == SDL_KEYDOWN){
+				//Update key in chip8
+				switch (EVENT.key.keysym.sym) 
+				{
+					case SDLK_1:
+						chip.KEY_PAD[1] = 1;
+						break;
+					case SDLK_2:
+						chip.KEY_PAD[2] = 1;
+						break;
+					case SDLK_3:
+						chip.KEY_PAD[3] = 1;
+						break;
+					case SDLK_4:
+						chip.KEY_PAD[12] = 1;
+						break;
+					case SDLK_q:
+						chip.KEY_PAD[4] = 1;
+						break;
+					case SDLK_w:
+						chip.KEY_PAD[5] = 1;
+						break;
+					case SDLK_e:
+						chip.KEY_PAD[6] = 1;
+						break;
+					case SDLK_r:
+						chip.KEY_PAD[13] = 1;
+						break;
+					case SDLK_a:
+						chip.KEY_PAD[7] = 1;
+						break;
+					case SDLK_s:
+						chip.KEY_PAD[8] = 1;
+						break;
+					case SDLK_d:
+						chip.KEY_PAD[9] = 1;
+						break;
+					case SDLK_f:
+						chip.KEY_PAD[14] = 1;
+						break;
+					case SDLK_z:
+						chip.KEY_PAD[10] = 1;
+						break;
+					case SDLK_x:
+						chip.KEY_PAD[0] = 1;
+						break;
+					case SDLK_c:
+						chip.KEY_PAD[11] = 1;
+						break;
+					case SDLK_v:
+						chip.KEY_PAD[15] = 1;
+						break;
 				}
 
 			}
-			emulateCycle(&chip);
-			//If the draw flag is set, update the screen
-			if(chip.DRAW_FLAG)
-				draw_Graphics(&chip);
+			else {
 
-			// Store key press state (Press and Release);
-			//set_Keys(&chip);
-
-			SDL_Delay(10);
+				memset(chip.KEY_PAD, 0, 16);
+			}
 
 		}
-	}
-	return 0;
-}
+		emulateCycle(&chip);
+		//If the draw flag is set, update the screen
+		if(chip.DRAW_FLAG)
+			draw_Graphics(&chip);
 
+		// Store key press state (Press and Release);
+		//set_Keys(&chip);
+
+		SDL_Delay(10);
+
+	}
+
+	return 0;
+
+}
