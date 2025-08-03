@@ -1,4 +1,4 @@
-# CHIP-8 Emulator with Debugger (C)
+# CHIP-8 Emulator (C)
 
 A Chip-8 emulator written in C with built-in debugger support.
 
@@ -39,15 +39,6 @@ Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-t
 ### Keyboard Layout Mapping
 
 The CHIP-8 uses a 16-key hexadecimal keypad, which is mapped to your host keyboard as follows:
-
-| CHIP-8 Key | Host Key |
-|:----------:|:--------:|
-| 1 2 3 C    | 1 2 3 4  |
-| 4 5 6 D    | Q W E R  |
-| 7 8 9 E    | A S D F  |
-| A 0 B F    | Z X C V  |
-
-Visual reference:
 
 ```
 CHIP-8:      Host Keyboard:
