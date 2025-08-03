@@ -9,7 +9,10 @@ A Chip-8 emulator written in C with built-in debugger support.
 - 📺 SDL2 display backend
 - ⌨️ Keyboard input
 - 🧪 Load ROMs for testing
-
+## Compile
+```bash
+gcc main.c display.c chip8.c -o chip8 -lSDL2
+```
 ## Build & Run
 
 ```bash
