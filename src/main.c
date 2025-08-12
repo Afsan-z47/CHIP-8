@@ -114,7 +114,7 @@ int main(int argc, char **argv){
 
 		// Store key press state (Press and Release);
 		//set_Keys(&chip);
-
+		//FIXME: The 60 Hz thing needs to be fixed
 		SDL_Delay(10);
 
 	}
