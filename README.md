@@ -30,7 +30,7 @@ Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-t
 - [ ] Keypad test
 - [ ] Buzzer test
 - [ ] Delay timer test
-- [ ] Instruction tests
+- [x] Instruction tests
 - [ ] Extended instructions (Super-Chip)
 - [ ] Miscellaneous behavior
 
