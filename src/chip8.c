@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "chip8.h"
-
+#include <time.h>
 
 unsigned char LATCH_KEY = 255;
 
@@ -81,7 +81,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 	memset(EMULATOR.KEY_PAD, 0, 16);
 	//init display
 	memset(EMULATOR.DISPLAY, 0, 64 * 32);
-
+	srand(time(NULL));
 	return EMULATOR;
 }
 
@@ -396,7 +396,7 @@ void emulateCycle(CHIP_8 *chip) {
 					chip->Index_REG += chip->GPR[X];
 					break;
 				case 0x0029:
-					// [ ] FX29     Point I to 5-byte font sprite for hex character VX 
+					// [x] FX29     Point I to 5-byte font sprite for hex character VX 
 					chip->Index_REG = 0x50 + chip->GPR[X] * 5;
 
 					break;
