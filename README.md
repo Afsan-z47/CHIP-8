@@ -27,12 +27,12 @@ gcc main.c display.c chip8.c -o chip8 -lSDL2
 Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-test-suite?tab=readme-ov-file#keypad-test)
 
 - [x] IBM Logo
-- [ ] Keypad test
+- [x] Keypad test
 - [ ] Buzzer test
-- [ ] Delay timer test
+- [x] Delay timer test
 - [x] Instruction tests
 - [ ] Extended instructions (Super-Chip)
-- [ ] Miscellaneous behavior
+- [x] Miscellaneous behavior
 
 ## Notes
 
