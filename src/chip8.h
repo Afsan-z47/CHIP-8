@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+
+extern unsigned char LATCH_KEY;
+
 typedef struct CHIP_8 {
 	unsigned char MEMORY[4096]; 	// MEMORY
 	unsigned char GPR[16];		// GENERAL PURPOSE REGISTERS 
@@ -17,6 +20,7 @@ typedef struct CHIP_8 {
 
 	unsigned char DISPLAY[64 * 32];
 	unsigned char KEY_PAD[16];
+	unsigned int TICK;
 
 } CHIP_8;
 

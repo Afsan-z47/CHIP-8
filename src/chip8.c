@@ -1,7 +1,12 @@
+#include <SDL2/SDL_timer.h>
 #include <stdio.h>
+#include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <string.h>
 #include "chip8.h"
+
+
+unsigned char LATCH_KEY = 255;
 
 // Function definitions
 
@@ -71,6 +76,11 @@ CHIP_8 init_EMU(FILE *ROM) {
 	// Reset TImers
 	EMULATOR.DELAY_TIMER = 0;
 	EMULATOR.SOUND_TIMER = 0;
+	EMULATOR.TICK = 0;
+	//init key pad
+	memset(EMULATOR.KEY_PAD, 0, 16);
+	//init display
+	memset(EMULATOR.DISPLAY, 0, 64 * 32);
 
 	return EMULATOR;
 }
@@ -109,7 +119,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 // [x] FX15     delay_timer := VX 
 // [x] FX18     sound_timer := VX 
 // [x] FX1E     I := I + VX 
-// [ ] FX29     Point I to 5-byte font sprite for hex character VX 
+// [x] FX29     Point I to 5-byte font sprite for hex character VX 
 // [x] FX33     Store BCD representation of VX in M(I)..M(I+2) 
 // [x] FX55     Store V0..VX in memory starting at M(I) 
 // [x] FX65     Read V0..VX from memory starting at M(I)
@@ -121,6 +131,9 @@ void emulateCycle(CHIP_8 *chip) {
 	// Fetch OPCODE
 	chip->OPCODE = chip->MEMORY[chip->PC] << 8 | chip->MEMORY[chip->PC + 1];
 	chip->PC += 2;
+	unsigned char X = (chip->OPCODE & 0x0F00) >> 8 ;
+	unsigned char Y = (chip->OPCODE & 0x00F0) >> 4 ;
+
 
 	// Decode OPCODE
 
@@ -174,19 +187,19 @@ void emulateCycle(CHIP_8 *chip) {
 		// [x] 5XY0
 		// [x] 9XY0
 		case 0x3000:
-			if((chip->GPR[(chip->OPCODE & 0x0F00) >> 8]) == (chip->OPCODE & 0x00FF)) 
+			if((chip->GPR[X]) == (chip->OPCODE & 0x00FF)) 
 				chip->PC += 2;
 			break;
 		case 0x4000:
-			if((chip->GPR[(chip->OPCODE & 0x0F00) >> 8]) != (chip->OPCODE & 0x00FF)) 
+			if((chip->GPR[X]) != (chip->OPCODE & 0x00FF)) 
 				chip->PC += 2;
 			break;
 		case 0x5000:
-			if((chip->GPR[(chip->OPCODE & 0x0F00) >> 8 ]) == (chip->GPR[(chip->OPCODE & 0x00F0) >> 4]))
+			if((chip->GPR[X]) == (chip->GPR[Y]))
 				chip->PC += 2;
 			break;
 		case 0x9000:
-			if((chip->GPR[(chip->OPCODE & 0x0F00) >> 8 ]) != (chip->GPR[(chip->OPCODE & 0x00F0) >> 4]))
+			if((chip->GPR[X]) != (chip->GPR[Y]))
 				chip->PC += 2;
 			break;
 
@@ -205,33 +218,33 @@ void emulateCycle(CHIP_8 *chip) {
 
 
 		case 0x6000: // 6XKK: VX := KK
-			chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->OPCODE & 0x00FF;
+			chip->GPR[X] = chip->OPCODE & 0x00FF;
 			break;
 
 		case 0x7000: // 7XKK: VX := VX + KK
-			chip->GPR[(chip->OPCODE & 0x0F00) >> 8] += chip->OPCODE & 0x00FF;
+			chip->GPR[X] += chip->OPCODE & 0x00FF;
 			break;
 
 		case 0x8000:
 			switch (chip->OPCODE & 0x000F) {
 				case 0x0000:
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					chip->GPR[X] = chip->GPR[Y];
 					break;
 				case 0x0001:
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x0F00) >>8] | chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					chip->GPR[X] = chip->GPR[X] | chip->GPR[Y];
 					break;
 
 				case 0x0002:
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x0F00) >> 8] & chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					chip->GPR[X] = chip->GPR[X] & chip->GPR[Y];
 					break;
 
 				case 0x0003:
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x0F00) >> 8] ^ chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					chip->GPR[X] = chip->GPR[X] ^ chip->GPR[Y];
 					break;
 
 				case 0x0004:
-					unsigned short temp_0 = (unsigned short)chip->GPR[(chip->OPCODE & 0x0F00) >> 8] + (unsigned short)chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x0F00) >> 8] + chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					unsigned short temp_0 = (unsigned short)chip->GPR[X] + (unsigned short)chip->GPR[Y];
+					chip->GPR[X] = chip->GPR[X] + chip->GPR[Y];
 
 					if( temp_0 > 255)
 						chip->GPR[15] = 1;
@@ -241,10 +254,10 @@ void emulateCycle(CHIP_8 *chip) {
 
 				case 0x0005:
 
-					unsigned char temp_1 = chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x0F00) >> 8] - chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+					unsigned char temp_1 = chip->GPR[X];
+					chip->GPR[X] = chip->GPR[X] - chip->GPR[Y];
 
-					if( (chip->GPR[(chip->OPCODE & 0x0F00) >> 8]) > temp_1 ) 
+					if( (chip->GPR[X]) > temp_1 ) 
 						chip->GPR[15] = 0;
 					else chip->GPR[15] = 1;
 
@@ -255,8 +268,8 @@ void emulateCycle(CHIP_8 *chip) {
 
 				case 0x0007:
 
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->GPR[(chip->OPCODE & 0x00F0) >> 4] - chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
-					if( chip->GPR[(chip->OPCODE & 0x00F0) >> 4] > chip->GPR[(chip->OPCODE & 0x0F00) >> 8]) 
+					chip->GPR[X] = chip->GPR[Y] - chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
+					if( chip->GPR[Y] > chip->GPR[X]) 
 						chip->GPR[15] = 1;
 					else chip->GPR[15] = 0;
 
@@ -264,20 +277,16 @@ void emulateCycle(CHIP_8 *chip) {
 					break;
 				case 0x0006: // SHR VX
 					{
-						unsigned char x = (chip->OPCODE & 0x0F00) >> 8;
-						unsigned char y = (chip->OPCODE & 0x00F0) >> 4;
-						unsigned char lsb = chip->GPR[x] & 0x01; 
-						chip->GPR[x] >>= 1;
+						unsigned char lsb = chip->GPR[X] & 0x01; 
+						chip->GPR[X] >>= 1;
 						chip->GPR[15] = lsb ; // LSB before shift
 					}
 					break;
 
 				case 0x000E: // SHL VX
 					{
-						unsigned char x = (chip->OPCODE & 0x0F00) >> 8;
-						unsigned char y = (chip->OPCODE & 0x00F0) >> 4;
-						unsigned char msb = (chip->GPR[x] & 0x80) >> 7;
-						chip->GPR[x] <<= 1;
+						unsigned char msb = (chip->GPR[X] & 0x80) >> 7;
+						chip->GPR[X] <<= 1;
 						chip->GPR[15] = msb; // MSB before shift
 					}
 					break;
@@ -289,11 +298,11 @@ void emulateCycle(CHIP_8 *chip) {
 		// Besure to complete these.
 		/*
 			case 0x0004: // 8XY4: VX := VX + VY, VF := carry
-			if(chip->GPR[(chip->OPCODE & 0x00F0) >> 4] > (0xFF - chip->GPR[(chip->OPCODE & 0x0F00) >> 8]))
+			if(chip->GPR[Y] > (0xFF - chip->GPR[X]))
 				chip->GPR[0xF] = 1; // carry
 			else
 				chip->GPR[0xF] = 0;
-			chip->GPR[(chip->OPCODE & 0x0F00) >> 8] += chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+			chip->GPR[X] += chip->GPR[Y];
 			//	chip->PC += 2; //NOTE: Already added this at the start
 			break;
 		*/
@@ -307,7 +316,7 @@ void emulateCycle(CHIP_8 *chip) {
 			break;
 
 		case 0xC000:
-			chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = rand() & (chip->OPCODE & 0x00FF);
+			chip->GPR[X] = rand() & (chip->OPCODE & 0x00FF);
 			break;
 
 		//FIXME: Another one that belongs to the class of F
@@ -321,23 +330,20 @@ void emulateCycle(CHIP_8 *chip) {
 				// EX9E: Skips the next instruction 
 				// if the key stored in VX is pressed
 				case 0x009E:
-					//	if(chip.KEY[chip->GPR[(chip->OPCODE & 0x0F00) >> 8]] != 0)
+					//	if(chip.KEY[chip->GPR[X]] != 0)
 					//		chip->PC += 4;
 					//	else
 					//		chip->PC += 2;
 					//NOTE: Commmented the code for adjustment of PC increment at the start
-					if(chip->KEY_PAD[chip->GPR[(chip->OPCODE & 0x0F00) >> 8]] != 0)
+					if(chip->KEY_PAD[chip->GPR[X]] != 0){
 						chip->PC += 2;
+					}
 					break;
 
 				case 0x00A1:
-					if(chip->KEY_PAD[chip->GPR[(chip->OPCODE & 0x0F00) >> 8]] == 0)
+					if(chip->KEY_PAD[chip->GPR[X]] == 0)
 						chip->PC += 2;
 					break;
-
-
-				default:
-					printf("Unknown OPCODE: 0x%X\n", chip->OPCODE);
 			}
 			break;
 
@@ -347,7 +353,7 @@ void emulateCycle(CHIP_8 *chip) {
 		// [x] FX15     delay_timer := VX 
 		// [x] FX18     sound_timer := VX 
 		// [x] FX1E     I := I + VX 
-		// [ ] FX29     Point I to 5-byte font sprite for hex character VX 
+		// [x] FX29     Point I to 5-byte font sprite for hex character VX 
 		// [x] FX33     Store BCD representation of VX in M(I)..M(I+2) 
 		// [x] FX55     Store V0..VX in memory starting at M(I) 
 		// [x] FX65     Read V0..VX from memory starting at M(I)
@@ -358,55 +364,55 @@ void emulateCycle(CHIP_8 *chip) {
 			switch(chip->OPCODE & 0x00FF)
 			{
 				case 0x0007:
-					chip->GPR[(chip->OPCODE & 0x0F00) >> 8] = chip->DELAY_TIMER;
+					chip->GPR[X] = chip->DELAY_TIMER;
 					break;
 				case 0x000A:
-					if( (   chip->KEY_PAD[0] ||
-						chip->KEY_PAD[1] ||
-						chip->KEY_PAD[2] ||
-						chip->KEY_PAD[3] ||
-						chip->KEY_PAD[4] ||
-						chip->KEY_PAD[5] ||
-						chip->KEY_PAD[6] ||
-						chip->KEY_PAD[7] ||
-						chip->KEY_PAD[8] ||
-						chip->KEY_PAD[9] ||
-						chip->KEY_PAD[10] ||
-						chip->KEY_PAD[11] ||
-						chip->KEY_PAD[12] ||
-						chip->KEY_PAD[13] ||
-						chip->KEY_PAD[14] ||
-						chip->KEY_PAD[15]) == 0 
-					) chip->PC -= 2;
+					unsigned char key = 0;
+					chip->PC -= 2;
+					for( ; key<16 ; key++){
+						if(chip->KEY_PAD[key] == 1){
+							chip->GPR[X] = key;
+							LATCH_KEY = key;
+							break;
+						}
+					}
+					//printf("KEY state : [ %d ]\n", chip->KEY_PAD[LATCH_KEY] );
+					unsigned char LATCH_UNLOCKED = ((chip->KEY_PAD[LATCH_KEY] == 0) && (LATCH_KEY != 255 )) ? 1:0 ;
+					if(LATCH_UNLOCKED){ 
+						chip->PC += 2; LATCH_KEY = 255; 
+						//printf("LATCH UNLOCKED!\n");
+					}
 
 					break;
 				case 0x0015:
-					chip->DELAY_TIMER = chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
+					chip->DELAY_TIMER = chip->GPR[X];
 
 					break;
 				case 0x0018:
-					chip->SOUND_TIMER = chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
+					chip->SOUND_TIMER = chip->GPR[X];
 
 					break;
 				case 0x001E:
-					chip->Index_REG += chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
+					chip->Index_REG += chip->GPR[X];
 					break;
 				case 0x0029:
+					// [ ] FX29     Point I to 5-byte font sprite for hex character VX 
+					chip->Index_REG = 0x50 + chip->GPR[X] * 5;
 
 					break;
 				case 0x0033: // FX33: Store BCD representation of VX in M(I)..M(I+2)
-					chip->MEMORY[chip->Index_REG]     = chip->GPR[(chip->OPCODE & 0x0F00) >> 8] / 100;
-					chip->MEMORY[chip->Index_REG + 1] = (chip->GPR[(chip->OPCODE & 0x0F00) >> 8] / 10) % 10;
-					chip->MEMORY[chip->Index_REG + 2] = (chip->GPR[(chip->OPCODE & 0x0F00) >> 8] % 100) % 10;
+					chip->MEMORY[chip->Index_REG]     = chip->GPR[X] / 100;
+					chip->MEMORY[chip->Index_REG + 1] = (chip->GPR[X] / 10) % 10;
+					chip->MEMORY[chip->Index_REG + 2] = (chip->GPR[X] % 100) % 10;
 					//	chip->PC += 2; //NOTE: Already incremented PC at the start
 					break;				
 				case 0x0055:
-					for(int i=0; i <= (chip->OPCODE & 0x0F00) >> 8; i++){
+					for(int i=0; i <= X; i++){
 						chip->MEMORY[chip->Index_REG + i] = chip->GPR[i];
 					}
 					break;
 				case 0x0065:
-					for(int i=0; i <= (chip->OPCODE & 0x0F00) >> 8; i++){
+					for(int i=0; i <= X; i++){
 						chip->GPR[i] = chip->MEMORY[chip->Index_REG + i];
 					}
 					break;
@@ -430,8 +436,8 @@ void emulateCycle(CHIP_8 *chip) {
 		//              collision. If N=0 and extended mode, show 16x16 sprite.
 		case 0xD000:		   
 			{
-				unsigned short x = chip->GPR[(chip->OPCODE & 0x0F00) >> 8];
-				unsigned short y = chip->GPR[(chip->OPCODE & 0x00F0) >> 4];
+				unsigned short x = chip->GPR[X];
+				unsigned short y = chip->GPR[Y];
 				unsigned short height = chip->OPCODE & 0x000F;
 				unsigned short pixel;
 
@@ -459,16 +465,21 @@ void emulateCycle(CHIP_8 *chip) {
 	}
 
 	// Update timers
-	if (chip->DELAY_TIMER > 0)
-		--chip->DELAY_TIMER;
+	if( (SDL_GetTicks() - chip->TICK) >= 1000/60){
+		if (chip->DELAY_TIMER > 0)
+			--chip->DELAY_TIMER;
 
-	if (chip-> SOUND_TIMER > 0) {
-		if (chip->SOUND_TIMER == 1)
-			printf("BEEP!\n");
-		--chip->SOUND_TIMER;
+		if (chip-> SOUND_TIMER > 0) {
+			if (chip->SOUND_TIMER == 1)
+				printf("BEEP!\n");
+			--chip->SOUND_TIMER;
+		}
+		chip->TICK = SDL_GetTicks();
 	}
+	//Increment Tick
+	//chip->TICK ++;
 
-	if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
-	printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
+//	if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
+//	printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
 
 }
