@@ -464,22 +464,11 @@ void emulateCycle(CHIP_8 *chip) {
 
 	}
 
-	// Update timers
-	if( (SDL_GetTicks() - chip->TICK) >= 1000/60){
-		if (chip->DELAY_TIMER > 0)
-			--chip->DELAY_TIMER;
 
-		if (chip-> SOUND_TIMER > 0) {
-			if (chip->SOUND_TIMER == 1)
-				printf("BEEP!\n");
-			--chip->SOUND_TIMER;
-		}
-		chip->TICK = SDL_GetTicks();
-	}
 	//Increment Tick
 	//chip->TICK ++;
 
-//	if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
-//	printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
+	if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
+	printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
 
 }
