@@ -39,8 +39,11 @@ int main(int argc, char **argv){
 
 	// Set up render system and register input callbacks
 	//NOTE: Getting the window ID for Keyboard Initiailization
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	SDL_Init(SDL_INIT_VIDEO);
 	init_Graphics(); 
+	
+	//NOTE: For short sounds Mix_Chunk is used
+	SDL_Init(SDL_INIT_AUDIO);
 	Mix_Chunk *beep = NULL;
 	init_audio(&beep, audio_file);
 	//init_keyboard(window);
@@ -66,7 +69,9 @@ int main(int argc, char **argv){
 
 			if (chip. SOUND_TIMER > 0) {
 				if (chip.SOUND_TIMER == 1)
-					//printf("BEEP!\n");
+//					printf("BEEP!\n");
+					//NOTE: MIX_PlayChannel(Target_Channel, Mix_Chunk, Repeatation);
+					// Target_Channel = -1 for any channel
 					Mix_PlayChannel(-1, beep, 0); // Play once
 				--chip.SOUND_TIMER;
 			}
@@ -75,8 +80,11 @@ int main(int argc, char **argv){
 			if(is_quit) {
 				//Ending program
 				fclose(ROM);
+
 				Mix_FreeChunk(beep);
+
 				Mix_CloseAudio();
+
 				Mix_Quit();
 				return 0;
 			}
