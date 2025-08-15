@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_video.h>
 #include "display.h"
 
 #define VIDEO_WIDTH 64
@@ -10,15 +11,21 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
 void init_Graphics() {
+	
+	//NOTE: SDL_CreateWindow(TITLE, Position X, Position Y, Window Width, Window Height, Windoe Flag);
+	//	The window flag is part of a bit mask. Can be combined using the "|" operator.
+	//	SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+	//	SDL_WINDOW_SHOWN for showing the window
 
 	window = SDL_CreateWindow("CHIP-8 Emulator",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		VIDEO_WIDTH * SCALE, VIDEO_HEIGHT * SCALE, SDL_WINDOW_SHOWN);
 	
 	
-
+	//NOTE: SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
+	
+	//NOTE: Check for creation ERRORs
 	if (!window || !renderer) {
 		fprintf(stderr, "SDL Error: %s\n", SDL_GetError());
 		exit(1);
@@ -46,18 +53,28 @@ void draw_Graphics(CHIP_8 *chip) {
 */
 
 void draw_Graphics(CHIP_8 *chip) {
+	
+	//NOTE: Sets the Color to be drawn in renderer 
+	// Renderer, R, G, B, A -> RED, GREEN, BLUE, ALPHA
 	SDL_SetRenderDrawColor(renderer, 10, 20, 10, 255);  // Dark green background
-	SDL_RenderClear(renderer);
-
+	
+	//NOTE: Update the whole screen with renderer as argument according to the set color by SDL_SetRenderDrawColor
+	SDL_RenderClear(renderer); 
+	
 	SDL_SetRenderDrawColor(renderer, 153, 255, 153, 255); // Green pixels
+	
 	for (int y = 0; y < 32; y++) {
 		for (int x = 0; x < 64; x++) {
 			if (chip->DISPLAY[y * 64 + x]) {
-				SDL_Rect pixel = { x * SCALE, y * SCALE, SCALE, SCALE };
+				
+				//NOTE: Pixel Position (x,y) then pixel size (width, height)
+				SDL_Rect pixel = { x * SCALE, y * SCALE, SCALE, SCALE };				
+				
+				//NOTE: FILLS the rectangle defined by SDL_Rect with the color set by SDL_SetRendererDrawColor in renderer
 				SDL_RenderFillRect(renderer, &pixel);
 			}
 		}
 	}
-	SDL_RenderPresent(renderer);
+	
+	SDL_RenderPresent(renderer); //NOTE:Update Screen
 }
-

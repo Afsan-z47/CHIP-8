@@ -1,4 +1,5 @@
 #include "input.h"
+#include "display.h"
 
 int key_input(SDL_Event EVENT){
 	while(SDL_PollEvent( &EVENT)){
@@ -6,6 +7,8 @@ int key_input(SDL_Event EVENT){
 			//Destroy Stuff made stuff xD
 			SDL_DestroyWindow(window);
 			SDL_DestroyRenderer(renderer);
+			window = NULL;
+			renderer = NULL;
 			//Quit SDL subsystem
 			SDL_Quit();
 			return 1;
@@ -35,6 +38,8 @@ int key_input(SDL_Event EVENT){
 					//Destroy Stuff made stuff xD
 					SDL_DestroyWindow(window);
 					SDL_DestroyRenderer(renderer);
+					window = NULL;
+					renderer = NULL;
 					//Quit SDL subsystem
 					SDL_Quit();
 					return 1;
