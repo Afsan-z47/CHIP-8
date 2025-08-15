@@ -14,6 +14,7 @@ A Chip-8 emulator written in C with built-in debugger support.
 
 ```sh
 gcc main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
+=======
 ```
 
 ## Run
