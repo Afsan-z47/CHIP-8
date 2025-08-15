@@ -1,3 +1,5 @@
+#ifndef __CHIP8__
+#define __CHIP8__
 #include <stdio.h>
 
 
@@ -33,3 +35,5 @@ void init_INST_REG(unsigned short *Index_REG, unsigned char MEMORY_200, unsigned
 void init_STACK(unsigned short *STACK);
 CHIP_8 init_EMU(FILE *ROM);
 void emulateCycle(CHIP_8 *chip);
+
+#endif
