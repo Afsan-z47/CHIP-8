@@ -468,7 +468,7 @@ void emulateCycle(CHIP_8 *chip) {
 	//Increment Tick
 	//chip->TICK ++;
 
-	if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
-	printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
+	//if ((chip->OPCODE & 0xF0FF) == 0xF029) printf("THE FONT CODE\n");
+	//printf("PC: %04X OPCODE: %04X\n", chip->PC, chip->OPCODE);
 
 }

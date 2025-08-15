@@ -10,7 +10,6 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
 void init_Graphics() {
-	SDL_Init(SDL_INIT_VIDEO);
 
 	window = SDL_CreateWindow("CHIP-8 Emulator",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

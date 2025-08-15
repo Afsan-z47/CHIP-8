@@ -1,11 +1,13 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "display.h"
 #include "input.h"
+#include "audio.h"
 
 CHIP_8 chip;
 
@@ -20,23 +22,27 @@ void print_key(CHIP_8 chip){
 
 int main(int argc, char **argv){
 
-	if(argc < 2) {
-		fprintf(stderr, "Usage: %s <ROM file>\n", argv[0]);
+	if(argc < 3) {
+		fprintf(stderr, "Usage: %s <beep.wav> <ROM file>\n", argv[0]);
 	}
 
 	// Open ROM file
-	FILE *ROM = fopen( argv[1], "rb");
+	FILE *ROM = fopen( argv[2], "rb");
 	if (!ROM) {
 		perror("Failed to open ROM file");
 		return 1;
 	}
+	char* audio_file = argv[1];
 	//FIXME: Event Handler
 	SDL_Event EVENT;
 
 
 	// Set up render system and register input callbacks
 	//NOTE: Getting the window ID for Keyboard Initiailization
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	init_Graphics(); 
+	Mix_Chunk *beep = NULL;
+	init_audio(&beep, audio_file);
 	//init_keyboard(window);
 
 	// Initialize the CHIP-8 system
@@ -54,23 +60,26 @@ int main(int argc, char **argv){
 		//printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
 		//printf("Diff := %d\n", new_tick - chip.TICK);
 		if( (new_tick - chip.TICK) >= 1000/60){
-		printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
+			//printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
 			if (chip.DELAY_TIMER > 0)
 				--chip.DELAY_TIMER;
 
 			if (chip. SOUND_TIMER > 0) {
 				if (chip.SOUND_TIMER == 1)
-					printf("BEEP!\n");
+					//printf("BEEP!\n");
+					Mix_PlayChannel(-1, beep, 0); // Play once
 				--chip.SOUND_TIMER;
 			}
-			
 			//GET KEYBOARD INPUT
 			int is_quit = key_input(EVENT);
 			if(is_quit) {
+				//Ending program
 				fclose(ROM);
+				Mix_FreeChunk(beep);
+				Mix_CloseAudio();
+				Mix_Quit();
 				return 0;
 			}
-
 			//DRAW IN DISPLAY
 			if(chip.DRAW_FLAG)
 				draw_Graphics(&chip);
@@ -81,8 +90,8 @@ int main(int argc, char **argv){
 		//set_Keys(&chip);
 		//FIXME: The 60 Hz thing needs to be fixed
 		SDL_Delay(1);
-	}
+	}    
 
-	//	return 0;
+	//return 0;
 
 }
