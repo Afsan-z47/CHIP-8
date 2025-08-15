@@ -13,7 +13,7 @@ A Chip-8 emulator written in C with built-in debugger support.
 ## Compile
 
 ```sh
-gcc main.c display.c chip8.c -o chip8 -lSDL2
+gcc main.c display.c chip8.c input.c -o chip8 -lSDL2
 ```
 
 ## Run
