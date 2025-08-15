@@ -13,13 +13,13 @@ A Chip-8 emulator written in C with built-in debugger support.
 ## Compile
 
 ```sh
-gcc main.c display.c chip8.c -o chip8 -lSDL2
+gcc main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
 ```
 
 ## Run
 
 ```sh
-./chip8 roms/your_rom.ch8
+./chip8 beep.wav ../roms/your_rom.ch8
 ```
 
 ## Test Status
