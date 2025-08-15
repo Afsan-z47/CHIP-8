@@ -1,11 +1,11 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include <string.h>
-#include "chip8.h"
 #include "display.h"
+#include "input.h"
 
 CHIP_8 chip;
 
@@ -46,84 +46,43 @@ int main(int argc, char **argv){
 	// Emulate loop
 	while(1) {
 		// Emulate one cycle
-		while(SDL_PollEvent( &EVENT)){
-			if( EVENT.type == SDL_QUIT){
-				//Destroy Stuff made stuff xD
-				SDL_DestroyWindow(window);
-				SDL_DestroyRenderer(renderer);
-				//Quit SDL subsystem
-				SDL_Quit();
-				return 0;
-			}
-			//User presses a key
-			else if( EVENT.type == SDL_KEYDOWN){
-				//Update key in chip8
-				switch (EVENT.key.keysym.sym) 
-				{
-					case SDLK_1: chip.KEY_PAD[1] = 1; break;
-					case SDLK_2: chip.KEY_PAD[2] = 1; break;
-					case SDLK_3: chip.KEY_PAD[3] = 1; break;
-					case SDLK_4: chip.KEY_PAD[12] = 1; break;
-					case SDLK_q: chip.KEY_PAD[4] = 1; break;
-					case SDLK_w: chip.KEY_PAD[5] = 1; break;
-					case SDLK_e: chip.KEY_PAD[6] = 1; break;
-					case SDLK_r: chip.KEY_PAD[13] = 1; break;
-					case SDLK_a: chip.KEY_PAD[7] = 1; break;
-					case SDLK_s: chip.KEY_PAD[8] = 1; break;
-					case SDLK_d: chip.KEY_PAD[9] = 1; break;
-					case SDLK_f: chip.KEY_PAD[14] = 1; break;
-					case SDLK_z: chip.KEY_PAD[10] = 1; break;
-					case SDLK_x: chip.KEY_PAD[0] = 1; break;
-					case SDLK_c: chip.KEY_PAD[11] = 1; break;
-					case SDLK_v: chip.KEY_PAD[15] = 1; break;
-					case SDLK_ESCAPE: 
-						//Destroy Stuff made stuff xD
-						SDL_DestroyWindow(window);
-						SDL_DestroyRenderer(renderer);
-						//Quit SDL subsystem
-						SDL_Quit();
-						return 0;
-				}
-			}
-			else if( EVENT.type == SDL_KEYUP){
-				//Update key in chip8
-				switch (EVENT.key.keysym.sym) 
-				{
-					case SDLK_1: chip.KEY_PAD[1] = 0; break;
-					case SDLK_2: chip.KEY_PAD[2] = 0; break;
-					case SDLK_3: chip.KEY_PAD[3] = 0; break;
-					case SDLK_4: chip.KEY_PAD[12] = 0; break;
-					case SDLK_q: chip.KEY_PAD[4] = 0; break;
-					case SDLK_w: chip.KEY_PAD[5] = 0; break;
-					case SDLK_e: chip.KEY_PAD[6] = 0; break;
-					case SDLK_r: chip.KEY_PAD[13] = 0; break;
-					case SDLK_a: chip.KEY_PAD[7] = 0; break;
-					case SDLK_s: chip.KEY_PAD[8] = 0; break;
-					case SDLK_d: chip.KEY_PAD[9] = 0; break;
-					case SDLK_f: chip.KEY_PAD[14] = 0; break;
-					case SDLK_z: chip.KEY_PAD[10] = 0; break;
-					case SDLK_x: chip.KEY_PAD[0] = 0; break;
-					case SDLK_c: chip.KEY_PAD[11] = 0; break;
-					case SDLK_v: chip.KEY_PAD[15] = 0; break;
-				}
-
-
-			}
-
-		}
-//		print_key(chip);
+		//		print_key(chip);
 		emulateCycle(&chip);
 		//If the draw flag is set, update the screen
-		if(chip.DRAW_FLAG)
-			draw_Graphics(&chip);
+		// Update timers
+		unsigned int new_tick = SDL_GetTicks();
+		//printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
+		//printf("Diff := %d\n", new_tick - chip.TICK);
+		if( (new_tick - chip.TICK) >= 1000/60){
+		printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
+			if (chip.DELAY_TIMER > 0)
+				--chip.DELAY_TIMER;
 
+			if (chip. SOUND_TIMER > 0) {
+				if (chip.SOUND_TIMER == 1)
+					printf("BEEP!\n");
+				--chip.SOUND_TIMER;
+			}
+			
+			//GET KEYBOARD INPUT
+			int is_quit = key_input(EVENT);
+			if(is_quit) {
+				fclose(ROM);
+				return 0;
+			}
+
+			//DRAW IN DISPLAY
+			if(chip.DRAW_FLAG)
+				draw_Graphics(&chip);
+
+			chip.TICK = new_tick;
+		}
 		// Store key press state (Press and Release);
 		//set_Keys(&chip);
 		//FIXME: The 60 Hz thing needs to be fixed
-		SDL_Delay(10);
-		
+		SDL_Delay(1);
 	}
 
-	return 0;
+	//	return 0;
 
 }
