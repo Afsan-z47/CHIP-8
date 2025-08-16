@@ -23,6 +23,7 @@ void init_Graphics() {
 	
 	
 	//NOTE: SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
+	//FIXME: Direct leaks were traced to this function call
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	
 	//NOTE: Check for creation ERRORs
