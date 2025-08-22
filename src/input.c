@@ -1,16 +1,8 @@
 #include "input.h"
-#include "display.h"
 
 int key_input(SDL_Event EVENT){
 	while(SDL_PollEvent( &EVENT)){
 		if( EVENT.type == SDL_QUIT){
-			//Destroy Stuff made stuff xD
-			SDL_DestroyWindow(window);
-			SDL_DestroyRenderer(renderer);
-			window = NULL;
-			renderer = NULL;
-			//Quit SDL subsystem
-			SDL_Quit();
 			return 1;
 		}
 		//User presses a key
@@ -35,13 +27,6 @@ int key_input(SDL_Event EVENT){
 				case SDLK_c: chip.KEY_PAD[11] = 1; break;
 				case SDLK_v: chip.KEY_PAD[15] = 1; break;
 				case SDLK_ESCAPE: 
-					//Destroy Stuff made stuff xD
-					SDL_DestroyWindow(window);
-					SDL_DestroyRenderer(renderer);
-					window = NULL;
-					renderer = NULL;
-					//Quit SDL subsystem
-					SDL_Quit();
 					return 1;
 			}
 		}

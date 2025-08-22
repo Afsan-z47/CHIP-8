@@ -436,26 +436,33 @@ void emulateCycle(CHIP_8 *chip) {
 		//              collision. If N=0 and extended mode, show 16x16 sprite.
 		case 0xD000:		   
 			{
-				unsigned short x = chip->GPR[X];
-				unsigned short y = chip->GPR[Y];
+				unsigned short x = chip->GPR[X] & 0b0000000000111111; //NOTE: Modulo of 64 for spirit position wrapping
+				unsigned short y = chip->GPR[Y] & 0b0000000000011111; //NOTE: Modulo of 32 for spirit position wrapping
 				unsigned short height = chip->OPCODE & 0x000F;
-				unsigned short pixel;
-
-				chip->GPR[0xF] = 0;
-				for (int yline = 0; yline < height; yline++)
+				unsigned short pixel = 0;
+				chip->GPR[0xF] = 0; 	//NOTE: Regiter VF is set to 0 for initial valiue. 
+							//Remains OFF -> "0" if no pixel was turned off from ON -> "1" state.
+				for (int yline = 0; yline < height; yline++) //NOTE: For N rows
 				{
-					pixel = chip->MEMORY[chip->Index_REG + yline];
-					for(int xline = 0; xline < 8; xline++)
+					if((y + yline) >= 32) break; //NOTE: Boundary checks
+					pixel = chip->MEMORY[chip->Index_REG + yline]; //NOTE: Get Nth byte from memory address in  the Index Register.
+
+					for(int xline = 0; xline < 8; xline++) //NOTE: For each of the 8 pixels/bits in this sprite row (from left to right, ie. from most to least significant bit)
+					
 					{
-						if((pixel & (0x80 >> xline)) != 0)
+						if((pixel & (0x80 >> xline)) != 0) //NOTE: If the current pixel in the sprite row is on and the pixel at coordinates X,Y on the screen is also on, turn off the pixel and set VF to 1
+
 						{
-							if(chip->DISPLAY[(x + xline + ((y + yline) * 64))] == 1)
-								chip->GPR[0xF] = 1;
-							chip->DISPLAY[x + xline + ((y + yline) * 64)] ^= 1;
+							if(chip->DISPLAY[x + xline + ((y + yline) * 64)] == 1) //NOTE: "1" represents an on pixel.
+								chip->GPR[0xF] = 1; //NOTE: Regiter VF is set to 1 if the pixel was previously on.
+							//NOTE: Or if the current pixel in the sprite row is on and the screen pixel is not, draw the pixel at the X and Y coordinates
+							if((x + xline) >= 64 ) continue; //NOTE: Boundary checks
+							chip->DISPLAY[x + xline + ((y + yline) * 64)] ^= 1; //NOTE: Flip bits -- TOGGLE ON/OFF
 						}
 					}
 				}
-
+				
+				//FIXME: when does DRAW_FLAG go to 0?
 				chip->DRAW_FLAG = 1; // 1 == TRUE
 				//chip->PC += 2; //NOTE: PC already Incremented at start
 			}

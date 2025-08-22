@@ -18,7 +18,7 @@ void init_audio(Mix_Chunk **beep, char* audio_file){
 	//NOTE: For loading the .wav file to Mix_Chunk
 	*beep = Mix_LoadWAV(audio_file);
 	
-	if (!beep) {
+	if (!*beep) {
 		printf("Failed to load beep.wav: %s\n", Mix_GetError());
 		return;
 	}
