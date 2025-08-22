@@ -23,6 +23,7 @@ void init_Graphics() {
 	
 	
 	//NOTE: SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
+	//FIXME: Direct leaks were traced to this function call
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	
 	//NOTE: Check for creation ERRORs
@@ -75,6 +76,7 @@ void draw_Graphics(CHIP_8 *chip) {
 			}
 		}
 	}
-	
+	//FIXME: I wonder if this is the correct approach
+	chip->DRAW_FLAG = 0;
 	SDL_RenderPresent(renderer); //NOTE:Update Screen
 }

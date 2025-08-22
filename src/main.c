@@ -33,15 +33,15 @@ int main(int argc, char **argv){
 		return 1;
 	}
 	char* audio_file = argv[1];
-	//FIXME: Event Handler
-	SDL_Event EVENT;
+	//FIXME: Event Handler: Testing union initalizer
+	SDL_Event EVENT = {0} ; 
 
 
 	// Set up render system and register input callbacks
 	//NOTE: Getting the window ID for Keyboard Initiailization
 	SDL_Init(SDL_INIT_VIDEO);
 	init_Graphics(); 
-	
+
 	//NOTE: For short sounds Mix_Chunk is used
 	SDL_Init(SDL_INIT_AUDIO);
 	Mix_Chunk *beep = NULL;
@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 
 			if (chip. SOUND_TIMER > 0) {
 				if (chip.SOUND_TIMER == 1)
-//					printf("BEEP!\n");
+					//					printf("BEEP!\n");
 					//NOTE: MIX_PlayChannel(Target_Channel, Mix_Chunk, Repeatation);
 					// Target_Channel = -1 for any channel
 					Mix_PlayChannel(-1, beep, 0); // Play once
@@ -80,12 +80,21 @@ int main(int argc, char **argv){
 			if(is_quit) {
 				//Ending program
 				fclose(ROM);
-
+				
+				//Close audio
 				Mix_FreeChunk(beep);
-
 				Mix_CloseAudio();
-
 				Mix_Quit();
+				
+				//Destroy Stuff made stuff xD
+				SDL_DestroyWindow(window);
+				SDL_DestroyRenderer(renderer);
+				window = NULL;
+				renderer = NULL;
+				
+				//Quit SDL subsystem
+				SDL_Quit();
+
 				return 0;
 			}
 			//DRAW IN DISPLAY
