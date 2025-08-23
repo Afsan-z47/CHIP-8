@@ -20,7 +20,7 @@ void init_MEMORY(unsigned char *MEMORY, FILE *ROM) {
 
 	//TODO: [X] LOAD ROM at MEMORY: 0x200
 
-	int rom_read_result = fread(&MEMORY[0x200], sizeof(unsigned char), 4096 - 0x200, ROM);
+	long unsigned int rom_read_result = fread(&MEMORY[0x200], sizeof(unsigned char), 4096 - 0x200, ROM);
 	if (rom_read_result == 0) {
 		fprintf(stderr, "Error: Failed to load ROM.\n");
 		// You can exit or handle the error as needed
@@ -81,7 +81,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 	memset(EMULATOR.KEY_PAD, 0, 16);
 	//init display
 	memset(EMULATOR.DISPLAY, 0, 64 * 32);
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	return EMULATOR;
 }
 
@@ -132,10 +132,11 @@ CHIP_8 init_EMU(FILE *ROM) {
 
 void emulateCycle(CHIP_8 *chip) {
 	// Fetch OPCODE
-	chip->OPCODE = chip->MEMORY[chip->PC] << 8 | chip->MEMORY[chip->PC + 1];
+	//NOTE: These type casting are important because without them they are just guess work on how the conversion of types are being handled
+	chip->OPCODE = (unsigned short)(chip->MEMORY[chip->PC] << 8 | chip->MEMORY[chip->PC + 1]);
 	chip->PC += 2;
-	unsigned char X = (chip->OPCODE & 0x0F00) >> 8 ;
-	unsigned char Y = (chip->OPCODE & 0x00F0) >> 4 ;
+	unsigned char X = (unsigned char)((chip->OPCODE & 0x0F00) >> 8) ;
+	unsigned char Y = (unsigned char)((chip->OPCODE & 0x00F0) >> 4) ;
 
 
 	// Decode OPCODE
@@ -221,11 +222,11 @@ void emulateCycle(CHIP_8 *chip) {
 
 
 		case 0x6000: // 6XKK: VX := KK
-			chip->GPR[X] = chip->OPCODE & 0x00FF;
+			chip->GPR[X] = (unsigned char)(chip->OPCODE & 0x00FF);
 			break;
 
 		case 0x7000: // 7XKK: VX := VX + KK
-			chip->GPR[X] += chip->OPCODE & 0x00FF;
+			chip->GPR[X] += (unsigned char)(chip->OPCODE & 0x00FF);
 			break;
 
 		case 0x8000:
@@ -288,8 +289,8 @@ void emulateCycle(CHIP_8 *chip) {
 
 				case 0x000E: // SHL VX
 					{
-						unsigned char msb = (chip->GPR[X] & 0x80) >> 7;
-						chip->GPR[X] <<= 1;
+						unsigned char msb = (unsigned char)((chip->GPR[X] & 0x80) >> 7);
+						chip->GPR[X] = (unsigned char)(chip->GPR[X] << 1);
 						chip->GPR[15] = msb; // MSB before shift
 					}
 					break;
@@ -319,7 +320,7 @@ void emulateCycle(CHIP_8 *chip) {
 			break;
 
 		case 0xC000:
-			chip->GPR[X] = rand() & (chip->OPCODE & 0x00FF);
+			chip->GPR[X] = (unsigned char)(rand() & (chip->OPCODE & 0x00FF));
 			break;
 
 		//FIXME: Another one that belongs to the class of F
@@ -402,7 +403,7 @@ void emulateCycle(CHIP_8 *chip) {
 					break;
 				case 0x0029:
 					// [x] FX29     Point I to 5-byte font sprite for hex character VX 
-					chip->Index_REG = 0x50 + chip->GPR[X] * 5;
+					chip->Index_REG = (unsigned short)(0x50 + chip->GPR[X] * 5);
 
 					break;
 				case 0x0033: // FX33: Store BCD representation of VX in M(I)..M(I+2)
