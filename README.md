@@ -15,7 +15,7 @@ A Chip-8 emulator written in C with built-in debugger support.
 ```sh
 gcc main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
 ```
-# Rigorous Testing
+### Rigorous Testing
 ```sh
 gcc -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wuninitialized -fanalyzer -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g3 -O0 main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
 ```
