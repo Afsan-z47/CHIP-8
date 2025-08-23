@@ -372,7 +372,7 @@ void emulateCycle(CHIP_8 *chip) {
 				case 0x000A:
 					unsigned char key = 0;
 					chip->PC -= 2;
-					for( ; key<16 ; key++){
+					for( ; key <= 15 ; key++){
 						if(chip->KEY_PAD[key] == 1){
 							chip->GPR[X] = key;
 							LATCH_KEY = key;
@@ -380,7 +380,9 @@ void emulateCycle(CHIP_8 *chip) {
 						}
 					}
 					//printf("KEY state : [ %d ]\n", chip->KEY_PAD[LATCH_KEY] );
-					unsigned char LATCH_UNLOCKED = ((chip->KEY_PAD[LATCH_KEY] == 0) && (LATCH_KEY != 255 )) ? 1:0 ;
+					//FIXME: Stack buffer overflow detected here !?? INTERESTING!
+					//NOTE: FIXED: IF the (chip->KEY_PAD[LATCH_KEY] == 0) is checked before the, (LATCH_KEY != 255) then this error occurs
+					unsigned char LATCH_UNLOCKED = ((LATCH_KEY != 255 ) && (chip->KEY_PAD[LATCH_KEY] == 0) ) ? 1:0 ;
 					if(LATCH_UNLOCKED){ 
 						chip->PC += 2; LATCH_KEY = 255; 
 						//printf("LATCH UNLOCKED!\n");
