@@ -76,7 +76,7 @@ void draw_Graphics(CHIP_8 *chip) {
 			}
 		}
 	}
-	//FIXME: I wonder if this is the correct approach
+	//FIXME: OH! HERE!
 	chip->DRAW_FLAG = 0;
 	SDL_RenderPresent(renderer); //NOTE:Update Screen
 }

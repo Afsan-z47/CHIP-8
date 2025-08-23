@@ -26,7 +26,7 @@ typedef struct CHIP_8 {
 
 } CHIP_8;
 
-extern CHIP_8 chip;
+//extern CHIP_8 chip;
 
 // Function declarations
 void init_GPR(unsigned char *GPR);

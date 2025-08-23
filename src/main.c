@@ -5,11 +5,11 @@
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include "chip8.h"
 #include "display.h"
 #include "input.h"
 #include "audio.h"
 
-CHIP_8 chip;
 
 void print_key(CHIP_8 chip){
 	printf("%d %d %d %d\n", chip.KEY_PAD[0], chip.KEY_PAD[1], chip.KEY_PAD[2], chip.KEY_PAD[3]);
@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 
 	// Initialize the CHIP-8 system
 	// Load necessary Information
-	chip = init_EMU(ROM);
+	CHIP_8 chip = init_EMU(ROM);
 
 	// Emulate loop
 	while(1) {
@@ -76,7 +76,7 @@ int main(int argc, char **argv){
 				--chip.SOUND_TIMER;
 			}
 			//GET KEYBOARD INPUT
-			int is_quit = key_input(EVENT);
+			int is_quit = key_input(EVENT, &chip);
 			if(is_quit) {
 				//Ending program
 				fclose(ROM);
@@ -100,7 +100,8 @@ int main(int argc, char **argv){
 			//DRAW IN DISPLAY
 			if(chip.DRAW_FLAG)
 				draw_Graphics(&chip);
-
+			
+			//NOTE: Update Tick for next check
 			chip.TICK = new_tick;
 		}
 		// Store key press state (Press and Release);
