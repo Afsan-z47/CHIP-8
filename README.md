@@ -28,12 +28,14 @@ Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-t
 
 - [x] IBM Logo
 - [x] Keypad test
-- [ ] Buzzer test
+- [x] Buzzer test
 - [x] Delay timer test
 - [x] Instruction tests
-- [ ] Extended instructions (Super-Chip)
-- [x] Miscellaneous behavior
-
+- [ ] Super-CHIP
+- [ ] XO-CHIP
+- [ ] Debugger
+- [ ] Miscellaneous behavior
+- [ ] Complete test -> Timendus CHIP-8 Testsuite
 ## Notes
 
 ### Keyboard Layout Mapping
