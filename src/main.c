@@ -34,7 +34,7 @@ int main(int argc, char **argv){
 	}
 	char* audio_file = argv[1];
 	//FIXME: Event Handler: Testing union initalizer
-	SDL_Event EVENT = {0} ; 
+	SDL_Event EVENT = {} ; //NOTE: In C23 or C++, assigning {} to a union guarantees the clearing of a whole union including padding bits (except for static storage duration initialization)
 
 
 	// Set up render system and register input callbacks
