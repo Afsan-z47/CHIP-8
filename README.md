@@ -23,12 +23,11 @@ make
 ```sh
 make debug
 ```
+- [x] Additonal tests are added from [Compiler Hardening](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
 ### clean up
 ```sh
 make clean
 ```
-- [x] Additonal tests are added from [Compiler Hardening](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
-
 ## Run
 
 ```sh
