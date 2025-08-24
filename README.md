@@ -2,6 +2,8 @@
 
 A Chip-8 emulator written in C with built-in debugger support.
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11080/badge)](https://www.bestpractices.dev/projects/11080)
+
 ## Features
 
 - Full Chip-8 instruction set
