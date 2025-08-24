@@ -27,7 +27,7 @@ make debug
 ```sh
 make clean
 ```
-- [ ] Additonal tests are to be added from [Compiler Hardening](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
+- [x] Additonal tests are added from [Compiler Hardening](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
 
 ## Run
 
