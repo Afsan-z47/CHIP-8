@@ -14,19 +14,25 @@ A Chip-8 emulator written in C with built-in debugger support.
 
 ## Compile
 
+Run these instrictions in the CHIP-8 directory
+### Build
 ```sh
-gcc main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
+make 
 ```
 ### Rigorous Testing
 ```sh
-gcc -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wuninitialized -fanalyzer -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g3 -O0 main.c display.c chip8.c input.c audio.c -o chip8 -lSDL2 -lSDL2_mixer
+make debug
+```
+### clean up
+```sh
+make clean
 ```
 - [ ] Additonal tests are to be added from [Compiler Hardening](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
 
 ## Run
 
 ```sh
-./chip8 beep.wav ../roms/your_rom.ch8
+./chip8 beep.wav roms/your_rom.ch8
 ```
 
 ## Test Status
