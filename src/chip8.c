@@ -86,47 +86,48 @@ CHIP_8 init_EMU(FILE *ROM) {
 }
 
 
-// NOTE: LIST OF OPCODES AND THEIR PROCESSESS
-// [0] -> Passed Testing!
-// [x] -> Completed implementation
-// [ ] -> Implementation left
-// [O] 00E0     Clear display 			
-// [O] 00EE     Return from subroutine
-// [O] 1NNN     Jump to NNN 
-// [O] 2NNN     Call subroutine at NNN 
-// [O] 3XKK     Skip next instruction if VX == KK 
-// [O] 4XKK     Skip next instruction if VX <> KK  (Probably VX != KK)
-// [O] 5XY0     Skip next instruction if VX == VY 
-// [O] 6XKK     VX := KK 
-// [O] 7XKK     VX := VX + KK 
-// [O] 8XY0     VX := VY, VF may change 
-// [O] 8XY1     VX := VX or VY, VF may change 
-// [O] 8XY2     VX := VX and VY, VF may change 
-// [O] 8XY3     VX := VX xor VY, VF may change
-// [O] 8XY4     VX := VX + VY, VF := carry 
-// [O] 8XY5     VX := VX - VY, VF := not borrow 
-// [O] 8XY6     VX := VX shr 1, VF := carry 
-// [O] 8XY7     VX := VY - VX, VF := not borrow
-// [O] 8XYE     VX := VX shl 1, VF := carry 
-// [O] 9XY0     Skip next instruction if VX <> VY 
-// [O] ANNN     I := NNN 
-// [O] BNNN     Jump to NNN+V0 
-// [O] CXKK     VX := pseudorandom_number and KK 
-//          collision. If N=0 and extended mode, show 16x16 sprite.
-// [O] DXYN    Show N-byte sprite from M(I) at coords (VX,VY), VF :=
-//          collision. If N=0 and extended mode, show 16x16 sprite.
-// [O] EX9E     Skip next instruction if key VX pressed 
-// [O] EXA1     Skip next instruction if key VX not pressed 
-// [O] FX07     VX := delay_timer 
-// [O] FX0A     wait for keypress, store hex value of key in VX 
-// [O] FX15     delay_timer := VX 
-// [O] FX18     sound_timer := VX 
-// [O] FX1E     I := I + VX 
-// [O] FX29     Point I to 5-byte font sprite for hex character VX 
-// [O] FX33     Store BCD representation of VX in M(I)..M(I+2) 
-// [O] FX55     Store V0..VX in memory starting at M(I) 
-// [O] FX65     Read V0..VX from memory starting at M(I)
-
+/* NOTE: LIST OF OPCODES AND THEIR PROCESSESS
+   [0] -> Passed Testing!
+   [x] -> Completed implementation
+   [ ] -> Implementation left
+   ===========================================
+   [O] 00E0     Clear display 			
+   [O] 00EE     Return from subroutine
+   [O] 1NNN     Jump to NNN 
+   [O] 2NNN     Call subroutine at NNN 
+   [O] 3XKK     Skip next instruction if VX == KK 
+   [O] 4XKK     Skip next instruction if VX <> KK  (Probably VX != KK)
+   [O] 5XY0     Skip next instruction if VX == VY 
+   [O] 6XKK     VX := KK 
+   [O] 7XKK     VX := VX + KK 
+   [O] 8XY0     VX := VY, VF may change 
+   [O] 8XY1     VX := VX or VY, VF may change 
+   [O] 8XY2     VX := VX and VY, VF may change 
+   [O] 8XY3     VX := VX xor VY, VF may change
+   [O] 8XY4     VX := VX + VY, VF := carry 
+   [O] 8XY5     VX := VX - VY, VF := not borrow 
+   [O] 8XY6     VX := VX shr 1, VF := carry 
+   [O] 8XY7     VX := VY - VX, VF := not borrow
+   [O] 8XYE     VX := VX shl 1, VF := carry 
+   [O] 9XY0     Skip next instruction if VX <> VY 
+   [O] ANNN     I := NNN 
+   [O] BNNN     Jump to NNN+V0 
+   [O] CXKK     VX := pseudorandom_number and KK 
+            collision. If N=0 and extended mode, show 16x16 sprite.
+   [O] DXYN    Show N-byte sprite from M(I) at coords (VX,VY), VF :=
+            collision. If N=0 and extended mode, show 16x16 sprite.
+   [O] EX9E     Skip next instruction if key VX pressed 
+   [O] EXA1     Skip next instruction if key VX not pressed 
+   [O] FX07     VX := delay_timer 
+   [O] FX0A     wait for keypress, store hex value of key in VX 
+   [O] FX15     delay_timer := VX 
+   [O] FX18     sound_timer := VX 
+   [O] FX1E     I := I + VX 
+   [O] FX29     Point I to 5-byte font sprite for hex character VX 
+   [O] FX33     Store BCD representation of VX in M(I)..M(I+2) 
+   [O] FX55     Store V0..VX in memory starting at M(I) 
+   [O] FX65     Read V0..VX from memory starting at M(I)
+*/
 
 
 

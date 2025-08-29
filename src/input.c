@@ -1,4 +1,7 @@
 #include "input.h"
+#include "display.h"
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_render.h>
 
 int key_input(SDL_Event EVENT, CHIP_8 *chip){
 	while(SDL_PollEvent( &EVENT)){
@@ -51,11 +54,15 @@ int key_input(SDL_Event EVENT, CHIP_8 *chip){
 				case SDLK_c: chip->KEY_PAD[11] = 0; break;
 				case SDLK_v: chip->KEY_PAD[15] = 0; break;
 			}
-
-
+		}
+		else if ( EVENT.type == SDL_WINDOWEVENT){
+			draw_Graphics(chip);
+		
+		//FIXME: The bug with memory leak can be observed if 
+		//instead of using draw_Graphics using
+		//SDL_RenderPresent(renderer);
 		}
 
 	}
 	return 0;
 }
-

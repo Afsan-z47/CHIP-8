@@ -62,6 +62,8 @@ int main(int argc, char **argv){
 		unsigned int new_tick = SDL_GetTicks();
 		//printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
 		//printf("Diff := %d\n", new_tick - chip.TICK);
+		
+
 		if( (new_tick - chip.TICK) >= 1000/60){
 			//printf("TICK := %d        chip := %d\n", new_tick, chip.TICK);
 			if (chip.DELAY_TIMER > 0)
