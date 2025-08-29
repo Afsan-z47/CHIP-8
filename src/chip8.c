@@ -80,7 +80,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 	//init key pad
 	memset(EMULATOR.KEY_PAD, 0, 16);
 	//init display
-	memset(EMULATOR.DISPLAY, 0, 64 * 32);
+	memset(EMULATOR.DISPLAY, 0, sizeof(EMULATOR.DISPLAY));
 	srand((unsigned int)time(NULL));
 	return EMULATOR;
 }
@@ -155,7 +155,7 @@ void emulateCycle(CHIP_8 *chip) {
 			switch(chip->OPCODE & 0x000F)
 			{
 				case 0x0000: // 0x00E0: Clears the screen        
-					memset(chip->DISPLAY, 0 , 64*32);
+					memset(chip->DISPLAY, 0 , sizeof(chip->DISPLAY));
 					break;
 
 				case 0x000E: // 0x00EE: Returns from subroutine          
@@ -460,7 +460,7 @@ void emulateCycle(CHIP_8 *chip) {
 						if((pixel & (0x80 >> xline)) != 0) //NOTE: If the current pixel in the sprite row is on and the pixel at coordinates X,Y on the screen is also on, turn off the pixel and set VF to 1
 
 						{
-							if(chip->DISPLAY[x + xline + ((y + yline) * 64)] == 1) //NOTE: "1" represents an on pixel.
+							if(chip->DISPLAY[x + xline + ((y + yline) * 64)] == -1) //NOTE: "1" represents an on pixel.
 								chip->GPR[0xF] = 1; //NOTE: Regiter VF is set to 1 if the pixel was previously on.
 							//NOTE: Or if the current pixel in the sprite row is on and the screen pixel is not, draw the pixel at the X and Y coordinates
 							if((x + xline) >= 64 ) continue; //NOTE: Boundary checks
@@ -468,7 +468,7 @@ void emulateCycle(CHIP_8 *chip) {
 							// but that will have to be implemented with the 60 Hz refresh rate.
 							//TODO: OPTIMIZATION: Change ONLY the affected pixels
 							//Implement this as a [x,y] info buffer and send that to draw
-							chip->DISPLAY[x + xline + ((y + yline) * 64)] ^= 1; //NOTE: Flip bits -- TOGGLE ON/OFF
+							chip->DISPLAY[x + xline + ((y + yline) * 64)] ^= -1; //NOTE: Flip bits -- TOGGLE ON/OFF
 						}
 					}
 				}

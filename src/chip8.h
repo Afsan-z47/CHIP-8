@@ -20,7 +20,7 @@ typedef struct CHIP_8 {
 	
 	unsigned char DRAW_FLAG;	// DRAW FLAG
 
-	unsigned char DISPLAY[64 * 32];
+	unsigned int DISPLAY[64 * 32];
 	unsigned char KEY_PAD[16];
 	unsigned int TICK;
 
