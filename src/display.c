@@ -1,7 +1,5 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
 #include "display.h"
+#include <SDL2/SDL_render.h>
 
 #define VIDEO_WIDTH 64
 #define VIDEO_HEIGHT 32
@@ -10,9 +8,6 @@
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
-
-// RGBA pixel buffer for the texture
-static uint32_t pixels[VIDEO_WIDTH * VIDEO_HEIGHT];
 
 void init_Graphics() {
 
@@ -27,8 +22,7 @@ void init_Graphics() {
 
 	// Setting minumux window size
 	SDL_SetWindowMinimumSize(window, VIDEO_WIDTH * 5, VIDEO_HEIGHT * 5);
-
-
+	
 	// SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
 	//FIXME: Direct leaks were traced to this function call
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -41,11 +35,6 @@ void init_Graphics() {
 		fprintf(stderr, "SDL Error: %s\n", SDL_GetError());
 		exit(1);
 	}
-
-
-	// Optional: nearest-neighbor scaling for crisp pixels
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-
 
 }
 
@@ -61,79 +50,48 @@ void draw_Graphics(CHIP_8 *chip) {
 	int scale_Y = height / VIDEO_HEIGHT;
 	int scale = (scale_X < scale_Y) ? scale_X : scale_Y;
 
-	
-	// Pixel Position (x,y) then pixel size (width, height)
-	// NOTE: Pixels are scalling equally for using "scale" on both width and height
+
+	// Define the destination rectangle on the window where the texture will be drawn
+	// SDL_Rect: {x, y, width, height}
+	// - x, y: top-left corner of where the texture starts
+	// - width, height: size to scale the texture to
+	// NOTE: Pixels are scaled uniformly using 'scale' so each CHIP-8 pixel stays square
+	//       and the display is centered in the window.
 	SDL_Rect pixel = { 
-		(width - VIDEO_WIDTH * scale) / 2,
-		(height - VIDEO_HEIGHT * scale) / 2,
-		VIDEO_WIDTH * scale,
-		VIDEO_HEIGHT * scale
+		(width - VIDEO_WIDTH * scale) / 2,   // center horizontally
+		(height - VIDEO_HEIGHT * scale) / 2, // center vertically
+		VIDEO_WIDTH * scale,                  // scale width of the texture
+		VIDEO_HEIGHT * scale                  // scale height of the texture
 	};
 
-	// Update texture with pixel buffer
-    	SDL_UpdateTexture(texture, NULL, chip->DISPLAY, VIDEO_WIDTH * sizeof(unsigned int));
+	//NOTE: SDL_UpdateTexture(SDL_Texture *texture, const SDL_Rect *rect, const void *pixels, int pitch);
+	// - Upload the CHIP-8 framebuffer (chip->DISPLAY) to the SDL texture
+	// - NULL  -> as second argument means we update the entire texture
+	// - pitch -> The number of bytes per row: VIDEO_WIDTH * sizeof(unsigned int)
+	
+	SDL_UpdateTexture(texture, NULL, chip->DISPLAY, VIDEO_WIDTH * sizeof(unsigned int));
 
-	// Update the whole screen with renderer as argument according to the set color by SDL_SetRenderDrawColor
+	// Clear the current rendering target (window) with the current draw color
+	//NOTE: It's not required for the renderer but ensured EXTRA window area remains default
 	SDL_RenderClear(renderer); 
 
-
-	// Sets the renderer area
-	// NOTE: window, pixel locations and renderer aligns by using the same scaling
-	//SDL_RenderSetLogicalSize(renderer, VIDEO_WIDTH * scale , VIDEO_HEIGHT * scale);
-
+	//NOTE: SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
+	// - Copy the texture to the rendering target (window) at the destination rectangle
+	// - SDL_Rect *srcrect -> NULL : Use all the pixel at the texture as source
+	// - SDL_RECT *dstrect -> &pixel: destination rectangle on the window (scaled and centered)
+	// It maps pixels from the source rectangle (srcrect) in the texture to pixels in the destination rectangle (dstrect) on the renderer.
+	// Every pixel in srcrect gets stretched or compressed to fit into dstrect.
+	// Mapping is linear: source (x, y) → destination (x', y').
 	SDL_RenderCopy(renderer, texture, NULL, &pixel);
-	SDL_RenderPresent(renderer); //Update Screen
 
+	// Present the updated renderer to the window
+	// This actually draws everything to the screen
+	
+	SDL_RenderPresent(renderer);
 	//FIXME: OH! HERE!
 	chip->DRAW_FLAG = 0;
 }
-
-/*
-void draw_Graphics(CHIP_8 *chip) {
-
-	// Convert DISPLAY to pixel array
-	for (int y = 0; y < VIDEO_HEIGHT; y++) {
-		for (int x = 0; x < VIDEO_WIDTH; x++) {
-			uint32_t color = chip->DISPLAY[x + y * VIDEO_WIDTH] ? 0xFF99FF99 : 0xFF0A140A; // ON = green, OFF = dark green
-			pixels[x + y * VIDEO_WIDTH] = color;
-		}
-	}
-
-	// Update texture with pixel buffer
-	SDL_UpdateTexture(texture, NULL, pixels, VIDEO_WIDTH * sizeof(uint32_t));
-
-	// Clear screen (background color is ignored because texture covers everything)
-	SDL_RenderClear(renderer);
-
-	// Determine window size and compute integer scale for aspect ratio
-	int win_width, win_height;
-	SDL_GetRendererOutputSize(renderer, &win_width, &win_height);
-
-	int scaleX = win_width / VIDEO_WIDTH;
-	int scaleY = win_height / VIDEO_HEIGHT;
-	int scale = (scaleX < scaleY) ? scaleX : scaleY;
-
-	// Compute destination rect for scaled texture
-	SDL_Rect dstRect = {
-		.x = (win_width - VIDEO_WIDTH * scale) / 2,
-		.y = (win_height - VIDEO_HEIGHT * scale) / 2,
-		.w = VIDEO_WIDTH * scale,
-		.h = VIDEO_HEIGHT * scale
-	};
-
-	SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-	SDL_RenderPresent(renderer);
-
-	chip->DRAW_FLAG = 0;
-}
-*/
-/*
-	FIXME:THESE DID NOT WORK! I wonder why?
-
-	// 🔑 Enforce integer scaling so each CHIP-8 pixel stays square
-	//SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
-
+	//FIXME: What does this do?
 	// Optional: nearest-neighbor scaling for crisp pixels
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-*/
+

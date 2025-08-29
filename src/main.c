@@ -1,6 +1,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
@@ -89,11 +90,13 @@ int main(int argc, char **argv){
 				Mix_Quit();
 				
 				//Destroy Stuff made stuff xD
-				SDL_DestroyWindow(window);
+				SDL_DestroyTexture(texture);
 				SDL_DestroyRenderer(renderer);
-				window = NULL;
-				renderer = NULL;
+				SDL_DestroyWindow(window);
 				
+				texture = NULL;
+				renderer = NULL;
+				window = NULL;
 				//Quit SDL subsystem
 				SDL_Quit();
 

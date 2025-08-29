@@ -1,7 +1,21 @@
 #ifndef __CHIP8__
 #define __CHIP8__
-#include <stdio.h>
 
+#include <stdio.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define WHITE 0xFFFFFFFF
+#define BLACK 0x00000000
+#define RED 0xFF0000FF
+#define BLUE 0x0000FFFF
+
+#define PIXEL_COLOR RED
+#define BACKGROUND_COLOR BLACK
+//#define PIXEL_COLOR (RED ^ BACKGROUND_COLOR)
 
 extern unsigned char LATCH_KEY;
 

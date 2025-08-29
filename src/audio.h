@@ -3,7 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <stdio.h>
 
-int init_audio(Mix_Chunk **beep, char* audio_file);
+void init_audio(Mix_Chunk **beep, char* audio_file);
 	
 #endif
