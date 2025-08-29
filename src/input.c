@@ -1,7 +1,5 @@
 #include "input.h"
 #include "display.h"
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_render.h>
 
 int key_input(SDL_Event EVENT, CHIP_8 *chip){
 	while(SDL_PollEvent( &EVENT)){
