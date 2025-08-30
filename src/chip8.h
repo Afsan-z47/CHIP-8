@@ -11,13 +11,29 @@
 #define WHITE 0xFFFFFFFF
 #define BLACK 0x00000000
 #define RED 0xFF0000FF
-#define BLUE 0x0000FFFF
 
-#define PIXEL_COLOR RED
-#define BACKGROUND_COLOR BLACK
+
+//#define BLACK   0x000000FF  // R=0   G=0   B=0   A=255
+#define RED     0xFF0000FF  // R=255 G=0   B=0   A=255
+#define GREEN   0x00FF00FF  // R=0   G=255 B=0   A=255
+#define BLUE    0x0000FFFF  // R=0   G=0   B=255 A=255
+#define YELLOW  0xFFFF00FF  // R=255 G=255 B=0   A=255
+#define CYAN    0x00FFFFFF  // R=0   G=255 B=255 A=255
+#define MAGENTA 0xFF00FFFF  // R=255 G=0   B=255 A=255
+
+
+extern unsigned int PIXEL_COLOR;
+extern unsigned int BACKGROUND_COLOR;
 //#define PIXEL_COLOR (RED ^ BACKGROUND_COLOR)
 
+
+
 extern unsigned char LATCH_KEY;
+extern unsigned char SHIFT_VY;
+extern unsigned char FX_INCR_I;
+extern unsigned char JUMP;
+extern unsigned char DISP_WAIT;
+extern unsigned char VF_RESET;
 
 typedef struct CHIP_8 {
 	unsigned char MEMORY[4096]; 	// MEMORY

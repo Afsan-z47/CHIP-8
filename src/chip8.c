@@ -2,6 +2,16 @@
 
 unsigned char LATCH_KEY = 255;
 
+//NOTE: The modern implementation of CHIP-8
+unsigned char SHIFT_VY = 0;
+unsigned char FX_INCR_I = 0;
+unsigned char JUMP = 0;
+unsigned char DISP_WAIT = 0;
+unsigned char VF_RESET = 1;
+
+
+unsigned int PIXEL_COLOR = WHITE;
+unsigned int BACKGROUND_COLOR = BLACK;
 //TODO: 
 //[X] LOAD FONT DATA
 //[X] LOAD ROM
@@ -71,7 +81,7 @@ CHIP_8 init_EMU(FILE *ROM) {
 	//init key pad
 	memset(EMULATOR.KEY_PAD, 0, 16);
 	//init display
-	memset(EMULATOR.DISPLAY, BACKGROUND_COLOR, sizeof(EMULATOR.DISPLAY));
+	memset(EMULATOR.DISPLAY, (int)BACKGROUND_COLOR, sizeof(EMULATOR.DISPLAY));
 	srand((unsigned int)time(NULL));
 	return EMULATOR;
 }
@@ -104,9 +114,9 @@ CHIP_8 init_EMU(FILE *ROM) {
    [O] ANNN     I := NNN 
    [O] BNNN     Jump to NNN+V0 
    [O] CXKK     VX := pseudorandom_number and KK 
-            collision. If N=0 and extended mode, show 16x16 sprite.
+	    collision. If N=0 and extended mode, show 16x16 sprite.
    [O] DXYN    Show N-byte sprite from M(I) at coords (VX,VY), VF :=
-            collision. If N=0 and extended mode, show 16x16 sprite.
+	    collision. If N=0 and extended mode, show 16x16 sprite.
    [O] EX9E     Skip next instruction if key VX pressed 
    [O] EXA1     Skip next instruction if key VX not pressed 
    [O] FX07     VX := delay_timer 
@@ -123,9 +133,9 @@ CHIP_8 init_EMU(FILE *ROM) {
 
 
 void emulateCycle(CHIP_8 *chip) {
-	
+
 	// Fetch OPCODE
-	
+
 	//NOTE: These type casting are important because without them they are just guess work on how the conversion of types are being handled
 	chip->OPCODE = (unsigned short)(chip->MEMORY[chip->PC] << 8 | chip->MEMORY[chip->PC + 1]);
 	chip->PC += 2;
@@ -146,7 +156,7 @@ void emulateCycle(CHIP_8 *chip) {
 			switch(chip->OPCODE & 0x000F)
 			{
 				case 0x0000: // 0x00E0: Clears the screen        
-					memset(chip->DISPLAY, BACKGROUND_COLOR , sizeof(chip->DISPLAY));
+					memset(chip->DISPLAY, (int)BACKGROUND_COLOR , sizeof(chip->DISPLAY));
 					break;
 
 				case 0x000E: // 0x00EE: Returns from subroutine          
@@ -220,16 +230,22 @@ void emulateCycle(CHIP_8 *chip) {
 				case 0x0000:
 					chip->GPR[X] = chip->GPR[Y];
 					break;
+
+				//FIXME: Specification Error for 8XY1, 8XY2, 8XY3
+				//VF-RESET
 				case 0x0001:
 					chip->GPR[X] = chip->GPR[X] | chip->GPR[Y];
+					if(VF_RESET) chip->GPR[0xF] = 0;
 					break;
 
 				case 0x0002:
 					chip->GPR[X] = chip->GPR[X] & chip->GPR[Y];
+					if(VF_RESET) chip->GPR[0xF] = 0;
 					break;
 
 				case 0x0003:
 					chip->GPR[X] = chip->GPR[X] ^ chip->GPR[Y];
+					if(VF_RESET) chip->GPR[0xF] = 0;
 					break;
 
 				case 0x0004:
@@ -262,8 +278,13 @@ void emulateCycle(CHIP_8 *chip) {
 
 
 					break;
+
+				//FIXME: Error in specification for 8XY6 and 8XYE
+
 				case 0x0006: // SHR VX
 					{
+						if(SHIFT_VY)
+							chip->GPR[X] = chip->GPR[Y];
 						unsigned char lsb = chip->GPR[X] & 0x01; 
 						chip->GPR[X] >>= 1;
 						chip->GPR[15] = lsb ; // LSB before shift
@@ -272,6 +293,8 @@ void emulateCycle(CHIP_8 *chip) {
 
 				case 0x000E: // SHL VX
 					{
+						if(SHIFT_VY)
+							chip->GPR[X] = chip->GPR[Y];
 						unsigned char msb = (unsigned char)((chip->GPR[X] & 0x80) >> 7);
 						chip->GPR[X] = (unsigned char)(chip->GPR[X] << 1);
 						chip->GPR[15] = msb; // MSB before shift
@@ -280,13 +303,14 @@ void emulateCycle(CHIP_8 *chip) {
 			}
 			break;
 
-		//FIXME: Error in specification
-		// In the original COSMAC VIP interpreter, this instruction jumped to the address NNN plus the value in the register V0. This was mainly used for “jump tables”, to quickly be able to jump to different subroutines based on some input.
-		//Starting with CHIP-48 and SUPER-CHIP, it was (probably unintentionally) changed to work as BXNN: It will jump to the address XNN, plus the value in the register VX. So the instruction B220 will jump to address 220 plus the value in the register V2.
-		//The BNNN instruction was not widely used, so you might be able to just implement the first behavior (if you pick one, that’s definitely the one to go with). If you want to support a wide range of CHIP-8 programs, make this “quirk” configurable.
+		//FIXME: Error in specification for BNNN
 
 		case 0xB000:
-			chip->PC = (chip->OPCODE & 0x0FFF) + chip->GPR[0];
+
+			//Use VX instead of V0
+			if(JUMP) chip->PC = (chip->OPCODE & 0x0FFF) + chip->GPR[X];
+			else chip->PC = (chip->OPCODE & 0x0FFF) + chip->GPR[0];
+
 			break;
 
 		case 0xC000:
@@ -356,8 +380,17 @@ void emulateCycle(CHIP_8 *chip) {
 					chip->SOUND_TIMER = chip->GPR[X];
 
 					break;
+
+				//FIXME: Error in specification for FX1E
 				case 0x001E:
 					chip->Index_REG += chip->GPR[X];
+
+					// Memory does not index beyond 12bits
+					if(chip->Index_REG > 0xFFF) chip->GPR[0xF] = 1;
+					//else chip->GPR[0xF] = 0;
+
+					chip->Index_REG &= 0xFFF;
+
 					break;
 				case 0x0029:
 					// [x] FX29     Point I to 5-byte font sprite for hex character VX 
@@ -369,15 +402,26 @@ void emulateCycle(CHIP_8 *chip) {
 					chip->MEMORY[chip->Index_REG + 1] = (chip->GPR[X] / 10) % 10;
 					chip->MEMORY[chip->Index_REG + 2] = (chip->GPR[X] % 100) % 10;
 					break;				
+
+				//FIXME: Error in specification for FX55 and FX65
+
 				case 0x0055:
-					for(int i=0; i <= X; i++){
+					for(unsigned short i=0; i <= X; i++){
 						chip->MEMORY[chip->Index_REG + i] = chip->GPR[i];
 					}
+
+					//Change value of I += X
+					if(FX_INCR_I) chip->Index_REG += X + 1;
+
 					break;
 				case 0x0065:
-					for(int i=0; i <= X; i++){
+					for(unsigned short i=0; i <= X; i++){
 						chip->GPR[i] = chip->MEMORY[chip->Index_REG + i];
 					}
+
+					//Change value of I += X
+					if(FX_INCR_I) chip->Index_REG += X +1;
+
 					break;
 
 				default:
@@ -402,32 +446,32 @@ void emulateCycle(CHIP_8 *chip) {
 				unsigned short height = chip->OPCODE & 0x000F;
 				unsigned short pixel = 0;
 				chip->GPR[0xF] = 0; 	//NOTE: Regiter VF is set to 0 for initial valiue. 
-							//Remains OFF -> "0" if no pixel was turned off from ON -> "1" state.
+				//Remains OFF -> "0" if no pixel was turned off from ON -> "1" state.
 				for (int yline = 0; yline < height; yline++) //NOTE: For N rows
 				{
 					if((y + yline) >= 32) break; //NOTE: Boundary checks
 					pixel = chip->MEMORY[chip->Index_REG + yline]; //NOTE: Get Nth byte from memory address in  the Index Register.
 
 					for(int xline = 0; xline < 8; xline++) //NOTE: For each of the 8 pixels/bits in this sprite row (from left to right, ie. from most to least significant bit)
-					
+
 					{
 						if((pixel & (0x80 >> xline)) != 0) //NOTE: If the current pixel in the sprite row is on and the pixel at coordinates X,Y on the screen is also on, turn off the pixel and set VF to 1
 
 						{
 							if((x + xline) >= 64 ) continue; // Boundary checks
-							
+
 							if(chip->DISPLAY[x + xline + ((y + yline) * 64)] == PIXEL_COLOR ) // If PIXEL is ON
 								chip->GPR[0xF] = 1; //NOTE: Regiter VF is set to 1 if the pixel was previously on.
 							//NOTE: Or if the current pixel in the sprite row is on and the screen pixel is not, draw the pixel at the X and Y coordinates
-							
+
 							//FIXME: Display flicker may be fixed my drawing from here right away
 							// but that will have to be implemented with the 60 Hz refresh rate.
-							
+
 							chip->DISPLAY[x + xline + ((y + yline) * 64)] ^= PIXEL_COLOR; //NOTE: Flip bits -- TOGGLE ON/OFF
 						}
 					}
 				}
-				
+
 				//FIXME: when does DRAW_FLAG go to 0?
 				chip->DRAW_FLAG = 1; // 1 == TRUE
 			}

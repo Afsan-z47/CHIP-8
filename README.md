@@ -46,8 +46,8 @@ Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-t
 - [ ] Super-CHIP
 - [ ] XO-CHIP
 - [ ] Debugger
-- [ ] Miscellaneous behavior
-- [ ] Complete test -> Timendus CHIP-8 Testsuite
+- [x] Miscellaneous behavior
+- [x] Complete test -> Timendus CHIP-8 Testsuite
 ## Notes
 
 ### Keyboard Layout Mapping
