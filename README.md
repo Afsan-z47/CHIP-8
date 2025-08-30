@@ -8,9 +8,12 @@ A Chip-8 emulator written in C with built-in debugger support.
 
 - Full Chip-8 instruction set
 - Debugger: step, breakpoints, inspect memory/registers
-- SDL2 display backend
 - Keyboard input
 - Load ROMs for testing
+- Texture based graphics rendering with SDL2
+- Provided option for customizations
+- Pixel Coloring
+- Resizable windows
 
 ## Compile
 
@@ -99,6 +102,7 @@ Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-t
 - [ ] Debugger
 - [x] Miscellaneous behavior
 - [x] Complete test -> Timendus CHIP-8 Testsuite
+- [ ] POSIX support
 ## Notes
 
 ### Keyboard Layout Mapping
