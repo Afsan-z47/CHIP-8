@@ -25,7 +25,12 @@ void init_Graphics() {
 	
 	// SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
 	//FIXME: Direct leaks were traced to this function call
+	
+	//GPU Based Rendering
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	
+	//CPU Based Rendering
+	//renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
 
 	// Create a streaming texture for the 64x32 framebuffer
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, VIDEO_WIDTH, VIDEO_HEIGHT);
