@@ -90,7 +90,7 @@ OR using RGBA COLOR codes
 
 ## Test Status
 
-Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-test-suite?tab=readme-ov-file#keypad-test)
+Test ROMs from Timendus' [Chip-8 test suite](https://github.com/Timendus/chip8-test-suite)
 
 - [x] IBM Logo
 - [x] Keypad test
