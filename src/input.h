@@ -9,5 +9,6 @@
 #include "display.h"
 
 int key_input(SDL_Event EVENT, CHIP_8 *chip);
+void customize_keyboard();
 
 #endif

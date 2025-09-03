@@ -34,7 +34,7 @@ int main(int argc, char **args){
 	FILE* ROM = NULL;
 	char* audio_file = NULL;
 
-	while ((option = getopt(argc, args, "a:r:hc:SFJDVO")) != -1) {
+	while ((option = getopt(argc, args, "a:r:hkc:SFJDVO")) != -1) {
 		switch (option) {
 
 			case 'h':
@@ -43,6 +43,7 @@ int main(int argc, char **args){
 				printf("  -r <file>  -> rom <file>        ROM file to load\n");
 				printf("  -d 	     -> debug             Enable debugger\n");
 				printf("  -a <file>  -> audio <file.wav>  Audio file\n");
+				printf("  -k 	     -> Customize Keyboard\n");
 				printf("  -c <n>     -> color <value>     Set Pixel Color\n");
 				printf("  Values for <n> is [RED] [BLUE] [GREEN] [YELLOW] [CYAN] [MAGENTA] [WHITE](default) \n");
 				printf("  -h 	     -> help              Show this help\n");
@@ -118,8 +119,9 @@ int main(int argc, char **args){
 				JUMP = 0;
 				DISP_WAIT = 1;
 				VF_RESET = 1;
-
-
+				break;
+			case 'k':
+				customize_keyboard();
 				break;
 			case '?':
 			default:

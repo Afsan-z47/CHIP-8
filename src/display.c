@@ -22,16 +22,21 @@ void init_Graphics() {
 
 	// Setting minumux window size
 	SDL_SetWindowMinimumSize(window, VIDEO_WIDTH * 5, VIDEO_HEIGHT * 5);
-	
+
 	// SDL_RENDERER_ACCELERATED for Hardware Acceleration using GPU
 	//FIXME: Direct leaks were traced to this function call
-	
+
 	//GPU Based Rendering
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	
-	//CPU Based Rendering
-	//renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
-
+	if (!renderer ) {
+		fprintf(stderr, "GPU rendering failed. Falling back to CPU. SDL ERROR: %s\n", SDL_GetError());
+		//CPU Based Rendering
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
+		if (!renderer ) {
+			fprintf(stderr, "CPU rendering failed. Closing. SDL ERROR: %s\n", SDL_GetError());
+			exit(1);
+		}
+	}
 	// Create a streaming texture for the 64x32 framebuffer
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, VIDEO_WIDTH, VIDEO_HEIGHT);
 
@@ -73,7 +78,7 @@ void draw_Graphics(CHIP_8 *chip) {
 	// - Upload the CHIP-8 framebuffer (chip->DISPLAY) to the SDL texture
 	// - NULL  -> as second argument means we update the entire texture
 	// - pitch -> The number of bytes per row: VIDEO_WIDTH * sizeof(unsigned int)
-	
+
 	SDL_UpdateTexture(texture, NULL, chip->DISPLAY, VIDEO_WIDTH * sizeof(unsigned int));
 
 	// Clear the current rendering target (window) with the current draw color
@@ -91,12 +96,12 @@ void draw_Graphics(CHIP_8 *chip) {
 
 	// Present the updated renderer to the window
 	// This actually draws everything to the screen
-	
+
 	SDL_RenderPresent(renderer);
 	//FIXME: OH! HERE!
 	chip->DRAW_FLAG = 0;
 }
-	//FIXME: What does this do?
-	// Optional: nearest-neighbor scaling for crisp pixels
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+//FIXME: What does this do?
+// Optional: nearest-neighbor scaling for crisp pixels
+//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
