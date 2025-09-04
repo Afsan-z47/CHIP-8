@@ -16,10 +16,9 @@ A <strong>Chip-8 emulator</strong> written in C with built-in debugger support.
 - [Features](#-features)
 - [Build & Installation](https://github.com/Afsan-z47/CHIP-8/blob/main/README.md#%EF%B8%8F-build--installation)
 - [Run](https://github.com/Afsan-z47/CHIP-8/blob/main/README.md#%EF%B8%8F-build--installation)
-- [Screenshots](#-screenshots)
 - [Test Status](#-test-status)
 - [Notes](#-notes)
-- [Roadmap](#-roadmap)
+- [Idea Board](https://github.com/Afsan-z47/CHIP-8/blob/main/README.md#%EF%B8%8F-build--installation)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -121,9 +120,6 @@ A more customiable command will look like this:
 ./chip8 -r roms/Tests/5-quirks.ch8 -O
 ```
 
----
-
-## 🖼️ Screenshots
 These had [ -c Yellow ] flags added
 
 | <img src="https://github.com/user-attachments/assets/5b2d2d4b-7d62-4603-88de-d93891b9c555" alt="Legacy CHIP-8" width="400"/> | <img src="https://github.com/user-attachments/assets/020e2f7a-0f3b-4362-8f99-d0fa6a0cc7a1" alt="Modern CHIP-8" width="400"/> |
