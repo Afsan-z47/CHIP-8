@@ -411,7 +411,7 @@ void emulateCycle(CHIP_8 *chip) {
 					}
 
 					//Change value of I += X
-					if(FX_INCR_I) chip->Index_REG += X + 1;
+					if(FX_INCR_I) chip->Index_REG += (unsigned short)(X + 1);
 
 					break;
 				case 0x0065:
@@ -420,7 +420,7 @@ void emulateCycle(CHIP_8 *chip) {
 					}
 
 					//Change value of I += X
-					if(FX_INCR_I) chip->Index_REG += X +1;
+					if(FX_INCR_I) chip->Index_REG += (unsigned short)(X +1);
 
 					break;
 
