@@ -34,6 +34,7 @@ A <strong>Chip-8 emulator</strong> written in C with built-in debugger support.
 - Support for **Legacy CHIP-8** and **Modern CHIP-8**
 - Ambiguous opcode selection
 - Safety ensured using compiler hardening
+- POSIX supported
 
 ---
 
