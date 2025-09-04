@@ -14,7 +14,7 @@ A <strong>Chip-8 emulator</strong> written in C with built-in debugger support.
 
 ## 📖 Table of Contents
 - [Features](#-features)
-- [Build & Installation](#-build--installation)
+- [Build & Installation](https://github.com/Afsan-z47/CHIP-8/blob/main/README.md#%EF%B8%8F-build--installation)
 - [Usage](#-usage)
 - [Screenshots](#-screenshots)
 - [Test Status](#-test-status)
