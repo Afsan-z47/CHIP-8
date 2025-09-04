@@ -32,7 +32,7 @@ int main(int argc, char **args){
 
 
 	FILE* ROM = NULL;
-	char* audio_file = NULL;
+	char* audio_file = "beep.wav";
 
 	while ((option = getopt(argc, args, "a:r:hkc:SFJDVO")) != -1) {
 		switch (option) {
@@ -47,7 +47,6 @@ int main(int argc, char **args){
 				printf("  -c <n>     -> color <value>     Set Pixel Color\n");
 				printf("  Values for <n> is [RED] [BLUE] [GREEN] [YELLOW] [CYAN] [MAGENTA] [WHITE](default) \n");
 				printf("  -h 	     -> help              Show this help\n");
-
 				printf("  ==============================================\n");
 				printf("  Ambiguous instruction flags\n");
 				printf("  -S 	     -> Shift VY instead of Vx for [8XY6] and [8XYE]\n");
@@ -113,7 +112,7 @@ int main(int argc, char **args){
 				VF_RESET = 1;
 				break;
 			case 'O':
-			//Sets to the original CHIP-8 behaviour
+				//Sets to the original CHIP-8 behaviour
 				SHIFT_VY = 1;
 				FX_INCR_I = 1;
 				JUMP = 0;
@@ -155,11 +154,9 @@ int main(int argc, char **args){
 	// Emulate loop
 	while(1) {
 		// Emulate one cycle
-		//		print_key(chip);
-
-		if(chip.DRAW_FLAG && DISP_WAIT) goto SKIP;
+		//print_key(chip);
+		if(!(chip.DRAW_FLAG && DISP_WAIT))
 		emulateCycle(&chip);
-	SKIP:
 		//If the draw flag is set, update the screen
 		// Update timers
 		unsigned int new_tick = SDL_GetTicks();
@@ -181,28 +178,8 @@ int main(int argc, char **args){
 			int is_quit = key_input(EVENT, &chip);
 
 			//Ending program
-			if(is_quit) {
-
-				fclose(ROM);
-
-				//Close audio
-				Mix_FreeChunk(beep);
-				Mix_CloseAudio();
-				Mix_Quit();
-
-				//Destroy Stuff xD
-				SDL_DestroyTexture(texture);
-				SDL_DestroyRenderer(renderer);
-				SDL_DestroyWindow(window);
-
-				texture = NULL;
-				renderer = NULL;
-				window = NULL;
-				//Quit SDL subsystem
-				SDL_Quit();
-
-				return 0;
-			}
+			if(is_quit) break;
+			
 			//DRAW IN DISPLAY
 			if(chip.DRAW_FLAG)
 				draw_Graphics(&chip);
@@ -214,5 +191,27 @@ int main(int argc, char **args){
 		//set_Keys(&chip);
 		//FIXME: The 60 Hz thing needs to be fixed
 		SDL_Delay(1);
-	}    
+	}
+	
+	//Ending program
+	fclose(ROM);
+
+	//Close audio
+	Mix_FreeChunk(beep);
+	Mix_CloseAudio();
+	Mix_Quit();
+
+	//Destroy Stuff xD
+	SDL_DestroyTexture(texture);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+
+	//texture = NULL;
+	//renderer = NULL;
+	//window = NULL;
+	
+	//Quit SDL subsystem
+	SDL_Quit();
+
+	return 0;
 }

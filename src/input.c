@@ -4,7 +4,6 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
 #include <stdio.h>
-#include <string.h>
 
 #define REQUIRED_TERMINAL_LINES 23
 
@@ -87,14 +86,14 @@ int key_input(SDL_Event EVENT, CHIP_8 *chip){
 }
 
 void draw_layout() {
-	
+
 	//NOTE: Required line amount is being added
 	for (int i = 0; i < REQUIRED_TERMINAL_LINES; i++) {
 		printf("\n");
 	}
 	//NOTE: Going back to original position
 	printf("\x1b[%dA", REQUIRED_TERMINAL_LINES);
-	
+
 	printf("\n- CHIP-8 Keypad -\n");
 	printf(
 		"┌───┬───┬───┬───┐\n"
@@ -164,8 +163,9 @@ void customize_keyboard(){
 
 
 	for(int i=0; i<16; i++){
-		unsigned char row = i/4;
-		unsigned char column = i%4;
+		row = (unsigned char)(i/4);
+		column = (unsigned char)(i%4);
+
 
 		//scan key
 		scanf(" %c", (char *)&KEY[i]);

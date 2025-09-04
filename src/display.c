@@ -27,6 +27,7 @@ void init_Graphics() {
 	//FIXME: Direct leaks were traced to this function call
 
 	//GPU Based Rendering
+	//NOTE: SDL_RENDERER_PRESETVSYNC makes SDL_RenderPresent() wait for the monitor refresh before swapping buffers, to prevent tearing and cap frame rate.
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer ) {
 		fprintf(stderr, "GPU rendering failed. Falling back to CPU. SDL ERROR: %s\n", SDL_GetError());
@@ -34,7 +35,7 @@ void init_Graphics() {
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
 		if (!renderer ) {
 			fprintf(stderr, "CPU rendering failed. Closing. SDL ERROR: %s\n", SDL_GetError());
-			exit(1);
+			exit(1); //FIXME:
 		}
 	}
 	// Create a streaming texture for the 64x32 framebuffer
@@ -43,7 +44,7 @@ void init_Graphics() {
 	//Check for creation ERRORs
 	if (!window || !renderer || !texture) {
 		fprintf(stderr, "SDL Error: %s\n", SDL_GetError());
-		exit(1);
+		exit(1); //FIXME:
 	}
 
 }
