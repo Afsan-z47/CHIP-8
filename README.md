@@ -8,9 +8,15 @@ A Chip-8 emulator written in C with built-in debugger support.
 
 - Full Chip-8 instruction set
 - Debugger: step, breakpoints, inspect memory/registers
-- SDL2 display backend
+- SDL2 display [Texture based rendering] with resizable windows
+- Supports GPU rendering with CPU fallback
 - Keyboard input
-- Load ROMs for testing
+- Customizable Keyboard
+- Monochrome pixel color selector
+- Support for Legacy CHIP-8
+- Support for Modern CHIP-8
+- Supports ambigious opcode selection.
+- Safety ensured using compiler hardening.
 
 ## Compile
 
