@@ -38,16 +38,22 @@ A <strong>Chip-8 emulator</strong> written in C with built-in debugger support.
 ---
 
 ## ⚙️ Build & Installation
+Clone the repository using:
+```sh
+git clone https://github.com/Afsan-z47/CHIP-8.git
+```
+Or [Download](https://github.com/Afsan-z47/CHIP-8/archive/refs/heads/main.zip) the .zip file and extract
 
 Run these instructions in the CHIP-8 directory:
 
 ### Build
+For normal build use the following instruction:
 ```sh
 make
 ````
 
 ### Rigorous Testing
-
+Use this for testing
 ```sh
 make debug
 ```
@@ -56,7 +62,7 @@ Includes additional tests from
 [Compiler Hardening Guidelines](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html)
 
 ### Clean Up
-
+For removing built chip8 and chip8-debug.
 ```sh
 make clean
 ```
@@ -124,7 +130,7 @@ These had [ -c Yellow ] flags added
 
 | <img src="https://github.com/user-attachments/assets/5b2d2d4b-7d62-4603-88de-d93891b9c555" alt="Legacy CHIP-8" width="400"/> | <img src="https://github.com/user-attachments/assets/020e2f7a-0f3b-4362-8f99-d0fa6a0cc7a1" alt="Modern CHIP-8" width="400"/> |
 | :--------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: |
-|                                                       **Legacy CHIP-8**                                                      |                                                       **Modern CHIP-8**                                                      |
+|                                                       **Modern CHIP-8**                                                      |                                                       **Legacy CHIP-8**                                                      |
 
 ---
 
