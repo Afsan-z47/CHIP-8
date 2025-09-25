@@ -1,5 +1,5 @@
 CC      := gcc
-SRC     := src/main.c src/display.c src/chip8.c src/input.c src/audio.c
+SRC     := src/main.c src/display.c src/chip8.c src/input.c src/audio.c src/debugger.c
 BIN     := chip8
 LIBS    := -lSDL2 -lSDL2_mixer
 
