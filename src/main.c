@@ -152,21 +152,64 @@ int main(int argc, char **args){
 	CHIP_8 chip = init_EMU(ROM);
 
 	// INITIALIZE THE DEBUUGER BEFORE THE WHILE LOOP , HERE
-	//
-	//
-	//
-	////////////////////////////////////////////////////////
+
+
+	Debugger* init_debugger() {
+    Debugger *dbg = malloc(sizeof(Debugger));
+    if (!dbg) return NULL;
+
+    dbg->window = SDL_CreateWindow("Chip-8 Debugger",
+                                   SDL_WINDOWPOS_CENTERED,
+                                   SDL_WINDOWPOS_CENTERED,
+                                   DBG_WIDTH, DBG_HEIGHT,
+                                   SDL_WINDOW_SHOWN);
+    if (!dbg->window) {
+        printf("Debugger window error: %s\n", SDL_GetError());
+        free(dbg);
+        return NULL;
+    }
+
+    dbg->renderer = SDL_CreateRenderer(dbg->window, -1, SDL_RENDERER_ACCELERATED);
+    if (!dbg->renderer) {
+        printf("Debugger renderer error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(dbg->window);
+        free(dbg);
+        return NULL;
+    }
+
+    return dbg;
+}
 	
 	// Emulate loop
 	while(1) {
 		// Emulate one cycle
 		//print_key(chip);
 		// Add some kind of mechanism here to check on the debugger and ubdate its status here
-		//
-		//
-		//
-		///
-		///////////////////////////////////////////////////////////////
+
+		    SDL_SetRenderDrawColor(dbg->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(dbg->renderer);
+
+    // Draw registers as colored bars (simpler than text)
+    for (int i = 0; i < 16; i++) {
+        int h = 20;
+        int w = (chip->GPR[i] * 2); // scale register value
+        SDL_Rect r = {10, 10 + i * (h + 2), w, h};
+
+        SDL_SetRenderDrawColor(dbg->renderer, 0, 200, 0, 255);
+        SDL_RenderFillRect(dbg->renderer, &r);
+    }
+
+    // Draw PC and I as red + blue bars
+    SDL_Rect pcBar = {10, 400, chip->PC / 4, 20};
+    SDL_SetRenderDrawColor(dbg->renderer, 200, 0, 0, 255);
+    SDL_RenderFillRect(dbg->renderer, &pcBar);
+
+    SDL_Rect iBar = {10, 430, chip->Index_REG / 4, 20};
+    SDL_SetRenderDrawColor(dbg->renderer, 0, 0, 200, 255);
+    SDL_RenderFillRect(dbg->renderer, &iBar);
+
+    SDL_RenderPresent(dbg->renderer);
+		//done this part
 		
 		if(!(chip.DRAW_FLAG && DISP_WAIT))
 		emulateCycle(&chip);
