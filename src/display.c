@@ -79,7 +79,7 @@ void draw_Graphics(CHIP_8 *chip) {
 	// - Upload the CHIP-8 framebuffer (chip->DISPLAY) to the SDL texture
 	// - NULL  -> as second argument means we update the entire texture
 	// - pitch -> The number of bytes per row: VIDEO_WIDTH * sizeof(unsigned int)
-
+	//FIXME: Minimize texture update avoiding NULL as 2nd perameter
 	SDL_UpdateTexture(texture, NULL, chip->DISPLAY, VIDEO_WIDTH * sizeof(unsigned int));
 
 	// Clear the current rendering target (window) with the current draw color
