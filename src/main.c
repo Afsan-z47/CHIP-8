@@ -151,10 +151,23 @@ int main(int argc, char **args){
 	// Load necessary Information
 	CHIP_8 chip = init_EMU(ROM);
 
+	// INITIALIZE THE DEBUUGER BEFORE THE WHILE LOOP , HERE
+	//
+	//
+	//
+	////////////////////////////////////////////////////////
+	
 	// Emulate loop
 	while(1) {
 		// Emulate one cycle
 		//print_key(chip);
+		// Add some kind of mechanism here to check on the debugger and ubdate its status here
+		//
+		//
+		//
+		///
+		///////////////////////////////////////////////////////////////
+		
 		if(!(chip.DRAW_FLAG && DISP_WAIT))
 		emulateCycle(&chip);
 		//If the draw flag is set, update the screen
